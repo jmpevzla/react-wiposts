@@ -35,6 +35,9 @@ function LoginView() {
       <footer>
         <p>Don't you have a account?</p>
         <a href="/register">Register</a>
+
+        <p>You forgot your password?</p>
+        <a href="/recover-password">Recover Password</a>
       </footer>
     </section>
   )
