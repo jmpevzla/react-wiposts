@@ -17,6 +17,10 @@ import EditPostView from "@/post/view/EditPostView";
 import PhotoProfileView from "@/profile/view/PhotoProfileView";
 import EditProfileView from "@/profile/view/EditProfileView";
 import ShowProfileView from "@/profile/view/ShowProfileView";
+import AboutView from "@/about/view/AboutView";
+import LoadingView from "@/loading/view/LoadingView";
+import NotFoundView from "@/notFound/view/NotFoundView";
+import Unauthorizated from "@/unauthorized/view/UnauthorizedView";
 
 export default AppView
 
@@ -48,6 +52,10 @@ function AppView() {
             <Route path="edit" element={<EditPostView />} />
             <Route path="photo" element={<PhotoPostView />} />
           </Route>
+          <Route path="about" element={<AboutView />} />
+          <Route path="loading" element={<LoadingView />} />
+          <Route path="not-found" element={<NotFoundView />} />
+          <Route path="unauthorizated" element={<Unauthorizated />} />
         </Route>
       </Routes>
     </BrowserRouter>
