@@ -1,6 +1,6 @@
-export default ShowView
+export default ShowProfileView
 
-function ShowView() {
+function ShowProfileView() {
   return (
     <section>
       <h2>demo@wiposts.io</h2>
@@ -16,6 +16,7 @@ function ShowView() {
       </div>
 
       <div>
+        <p>demo</p>
         <p>10 posts</p>
         <p>Your Name</p>
         <p>Description</p>

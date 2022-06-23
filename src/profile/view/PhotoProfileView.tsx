@@ -1,6 +1,6 @@
-export default PhotoView
+export default PhotoProfileView
 
-function PhotoView() {
+function PhotoProfileView() {
   return (
     <section>
       <h2>Your Avatar</h2>

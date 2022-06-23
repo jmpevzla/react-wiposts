@@ -1,6 +1,6 @@
-export default ProfileView
+export default EditProfileView
 
-function ProfileView() {
+function EditProfileView() {
   return (
     <section>
       <h2 className="text-red-600">Your Profile</h2>
@@ -14,6 +14,11 @@ function ProfileView() {
 
         <div>
           <form>
+            <div>
+              <label>Your Username: </label> 
+              <input disabled value="demo"></input>
+            </div>
+
             <div>
               <label>Full Name</label>
               <input type="text" />

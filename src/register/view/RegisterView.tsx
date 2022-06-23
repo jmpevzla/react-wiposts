@@ -13,6 +13,11 @@ function RegisterView() {
           </div>
           
           <div>
+            <label>Username</label>
+            <input type="text" value="demo" />
+          </div>
+
+          <div>
             <label>Password</label>
             <input type="password" />
           </div>
@@ -26,7 +31,7 @@ function RegisterView() {
           <div>
             <label>Full Name</label>
             <input type="text" />
-          </div>      
+          </div>
 
           <button>Sign Up</button>
         </form>
