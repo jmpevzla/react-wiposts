@@ -9,6 +9,32 @@ function HomeView() {
         <a href="/profile">Profile</a>
       </div>
 
+      <div>
+        <input type="search" value="codes" />
+        <div>
+          <button>Filters</button> | 
+          <button>Sort</button>
+        </div>
+      </div>
+
+      <div>
+        <article>
+          <div>
+            <img className="w-28" src="https://picsum.photos/100/50?grayscale" />
+            <p>UserName <span>(10 posts)</span></p>
+          </div>
+          <div>
+            <img className="w-52" src="https://picsum.photos/300/150?grayscale" />
+            <p>Description</p>
+            <p>Hashtags</p>
+            <div className="flex justify-around">
+              <p>Date Published: 24/06/2022</p>
+              <p>Date Took it: 24/06/2022</p>
+            </div>
+          </div>
+        </article>
+      </div>
+
     </section>
   )
 }
