@@ -1,3 +1,5 @@
+import small from '@/imgs/small.jpg'
+
 export default EditPostDescView
 
 function EditPostDescView() {
@@ -9,7 +11,7 @@ function EditPostDescView() {
         <form>
           <div>
             <a href='/post/1/photo'>
-              <img className="w-25" src="https://picsum.photos/150/100?grayscale" />
+              <img className="w-25" src={small} />
             </a>
             <button>Change Photo</button>
           </div>

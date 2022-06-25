@@ -1,3 +1,5 @@
+import large from '@/imgs/large.jpg'
+
 export default ShowProfileView
 
 function ShowProfileView() {
@@ -10,7 +12,7 @@ function ShowProfileView() {
       </div>
 
       <div>
-        <img className="w-52" src="https://picsum.photos/200/150?grayscale" />
+        <img className="w-52" src={large} />
         <a href='/profile/photo'>Photo</a>
         <button type="button">Change Photo</button>
       </div>

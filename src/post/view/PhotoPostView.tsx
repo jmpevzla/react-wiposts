@@ -1,10 +1,12 @@
+import large from '@/imgs/large.jpg'
+
 export default PhotoPostView
 
 function PhotoPostView() {
   return (
     <div>
       <div>
-        <img className="w-full" src="https://picsum.photos/400/300?grayscale" />
+        <img className="w-full" src={large} />
       </div>
 
       <div>

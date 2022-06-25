@@ -1,3 +1,5 @@
+import large from '@/imgs/large.jpg'
+
 export default CreatePostView
 
 function CreatePostView() {
@@ -9,7 +11,7 @@ function CreatePostView() {
         <h3>Photo</h3>
 
         <form>
-          <img className="w-60" src="https://picsum.photos/300/200?grayscale" />
+          <img className="w-60" src={large} />
 
           <button>Take a Photo</button> | 
           <button>Select a Photo</button> |

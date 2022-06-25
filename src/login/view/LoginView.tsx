@@ -1,3 +1,5 @@
+import AuthLayout from "@/layout/view/AuthLayout"
+
 export default LoginView
 
 function LoginView() {

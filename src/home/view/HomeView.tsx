@@ -1,3 +1,6 @@
+import small from '@/imgs/small.jpg'
+import large from '@/imgs/large.jpg'
+
 export default HomeView
 
 function HomeView() {
@@ -20,11 +23,11 @@ function HomeView() {
       <div>
         <article>
           <div>
-            <img className="w-28" src="https://picsum.photos/100/50?grayscale" />
+            <img className="w-28" src={small} />
             <p>UserName <span>(10 posts)</span></p>
           </div>
           <div>
-            <img className="w-52" src="https://picsum.photos/300/150?grayscale" />
+            <img className="w-52" src={large} />
             <p>Description</p>
             <p>Hashtags</p>
             <div className="flex justify-around">

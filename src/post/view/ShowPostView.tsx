@@ -1,3 +1,6 @@
+import small from '@/imgs/small.jpg'
+import large from '@/imgs/large.jpg'
+
 export default ShowPostView
 
 function ShowPostView() {
@@ -8,7 +11,7 @@ function ShowPostView() {
       <div>
         <div>
           <a href="/profile">
-            <img className="w-28" src="https://picsum.photos/100/50?grayscale" />
+            <img className="w-28" src={small} />
           </a>
           <p>Your Name</p>
           <p>(10) Posts</p>
@@ -16,7 +19,7 @@ function ShowPostView() {
 
         <div>
           <a href="/post/1/photo">
-            <img className="w-60" src="https://picsum.photos/300/200?grayscale" />
+            <img className="w-60" src={large} />
           </a>
           <p>Description</p>
           <p>date published (21/06/2022)</p>

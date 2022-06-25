@@ -1,3 +1,5 @@
+import small from '@/imgs/small.jpg'
+
 export default CreatePostDescView
 
 function CreatePostDescView() {
@@ -5,7 +7,7 @@ function CreatePostDescView() {
     <section>
       <h2>Create a New Post!</h2>
 
-      <img className="w-25" src="https://picsum.photos/150/100?grayscale" />
+      <img className="w-25" src={small} />
 
       <div>
         <form>

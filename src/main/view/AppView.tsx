@@ -21,6 +21,9 @@ import AboutView from "@/about/view/AboutView";
 import LoadingView from "@/loading/view/LoadingView";
 import NotFoundView from "@/notFound/view/NotFoundView";
 import Unauthorizated from "@/unauthorized/view/UnauthorizedView";
+import AuthLayout from "@/layout/view/AuthLayout";
+import MainLayout from "@/layout/view/MainLayout";
+import NotificationsView from "@/notifications/view/NotificationsView";
 
 export default AppView
 
@@ -29,33 +32,40 @@ function AppView() {
     <BrowserRouter>
       <Routes>
         <Route path="/">
-          <Route index element={<HomeView />} />
-          <Route path="login" element={<LoginView />} />
-          <Route path="register" element={<RegisterView />} />
-          <Route path="recover-password">
-            <Route index element={<RecPasswordView />} />
-            <Route path="code" element={<RecPasswordCodeView />} />
-          </Route>
-          <Route path="profile">
-            <Route index element={<ShowProfileView />} />
-            <Route path="edit" element={<EditProfileView />} />
-            <Route path="photo" element={<PhotoProfileView />} />
-            <Route path="change-password" element={<ChangePassword />} />
-            <Route path=":id" element={<ShowProfileView />} />
-          </Route>
-          <Route path="post/:id">
-            <Route index element={<ShowPostView />} />
-            <Route path="create">
-              <Route index element={<CreatePostView />} />
-              <Route path="description" element={<CreatePostDescView />} />
+          <Route element={<AuthLayout />}>
+            <Route path="login" element={<LoginView />} />
+            <Route path="register" element={<RegisterView />} />
+            <Route path="recover-password">
+              <Route index element={<RecPasswordView />} />
+              <Route path="code" element={<RecPasswordCodeView />} />
             </Route>
-            <Route path="edit" element={<EditPostView />} />
-            <Route path="photo" element={<PhotoPostView />} />
           </Route>
-          <Route path="about" element={<AboutView />} />
-          <Route path="loading" element={<LoadingView />} />
-          <Route path="not-found" element={<NotFoundView />} />
-          <Route path="unauthorizated" element={<Unauthorizated />} />
+
+          <Route element={<MainLayout />}>
+            <Route index element={<HomeView />} />
+            <Route path="profile">
+              <Route index element={<ShowProfileView />} />
+              <Route path="edit" element={<EditProfileView />} />
+              <Route path="photo" element={<PhotoProfileView />} />
+              <Route path="change-password" element={<ChangePassword />} />
+              <Route path=":id" element={<ShowProfileView />} />
+            </Route>
+            <Route path="post/:id">
+              <Route index element={<ShowPostView />} />
+              <Route path="create">
+                <Route index element={<CreatePostView />} />
+                <Route path="description" element={<CreatePostDescView />} />
+              </Route>
+              <Route path="edit" element={<EditPostView />} />
+              <Route path="photo" element={<PhotoPostView />} />
+            </Route>
+            <Route path="notifications" element={<NotificationsView />} />
+            <Route path="about" element={<AboutView />} />
+            <Route path="loading" element={<LoadingView />} />
+            <Route path="not-found" element={<NotFoundView />} />
+            <Route path="unauthorizated" element={<Unauthorizated />} />
+          </Route>
+          
         </Route>
       </Routes>
     </BrowserRouter>
