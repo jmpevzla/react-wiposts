@@ -1,4 +1,6 @@
-import AuthLayout from "@/layout/view/AuthLayout"
+import { Link } from 'react-router-dom'
+import { Icon } from "@mdi/react"
+import { mdiLogin } from "@mdi/js"
 
 export default LoginView
 
@@ -9,21 +11,32 @@ function LoginView() {
       
       <div>
         <form onSubmit={() => { history.pushState('','','/') }}>
-          <div>
-            <label>Email</label>
-            <input type="email" />
+          <div className="form-control w-full max-w-xs">
+            <label htmlFor="inputEmail" className="label">
+              <span className="label-text">Email</span>
+            </label>
+            <input id="inputEmail" type="email" 
+              className="input input-bordered w-full max-w-xs" />
           </div>
           
-          <div>
-            <label>Password</label>
-            <input type="password" />
+          <div className="form-control w-full max-w-xs">
+            <label htmlFor="inputPassword" className="label">
+              <span className="label-text">Password</span>
+            </label>
+            <input id="inputPassword" type="password" 
+              className="input input-bordered w-full max-w-xs" />
           </div>
 
-          <button>Login</button>
+          <div className="mt-3 ml-28">
+            <button className="btn gap-2">
+              <Icon path={mdiLogin} size={1} />
+              Login
+            </button>
+          </div>
         </form>
       </div>
 
-      <section>
+      <section className="hidden">
         <h3>Social Login</h3>
         
         <div>
@@ -34,12 +47,16 @@ function LoginView() {
         </div>
       </section>
 
-      <footer>
-        <p>Don't you have a account?</p>
-        <a href="/register">Register</a>
+      <footer className="mt-3 border px-2">
+        <div>
+          <p className="font-bold">Don't you have a account?</p>
+          <Link className="link" to="/register">Register</Link>
+        </div>
 
-        <p>You forgot your password?</p>
-        <a href="/recover-password">Recover Password</a>
+        <div>
+          <p className="font-bold">You forgot your password?</p>
+          <Link className="link" to="/recover-password">Recover Password</Link>
+        </div>
       </footer>
     </section>
   )
