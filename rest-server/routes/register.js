@@ -25,9 +25,10 @@ async function getUser(email) {
   return resp.data.length === 0 ? null : resp.data[0];
 }
 
-async function createUser({ name, email, password }) {
+async function createUser({ username, email, password }) {
   const resp = await axios.post(urlUsers, {
-    name,
+    username,
+    name: username,
     email,
     password,
   });
@@ -44,7 +45,7 @@ async function createUser({ name, email, password }) {
 module.exports = async (req, res) => {
   try {
     urlUsers = createUrlUsers(req);
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
     const user = await getUser(email);
 
     if (user) {
@@ -57,7 +58,7 @@ module.exports = async (req, res) => {
     }
 
     // create user
-    const newUser = await createUser({ name, email, password });
+    const newUser = await createUser({ username, email, password });
 
     // return jwt
     const token = jwt.sign({ id: newUser.id }, JWTSECRET, {

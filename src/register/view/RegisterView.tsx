@@ -1,50 +1,137 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Icon } from "@mdi/react"
 import { mdiAccountArrowUp } from "@mdi/js"
+import { useState } from "react"
+import { useFormik } from "formik"
+import * as Yup from "yup"
+import type { Register } from "../types"
+import { doRegisterApi } from "../data/registerService"
 
 export default RegisterView
 
 function RegisterView() {
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
+
+  const RegisterSchema = Yup.object().shape({
+    email: Yup.string().email('Invalid Email').required('Required'),
+    username: Yup.string().required('Required'),
+    password: Yup.string().required('Required'),
+    confPassword: Yup.string().required('Required')
+  })
+
+  const formFormik = useFormik<Register>({
+    initialValues: {
+      email: '',
+      username: '',
+      password: '',
+      confPassword: ''
+    },
+    validationSchema: RegisterSchema,
+    validateOnChange: false,
+    onSubmit: async (values) => {
+      try {
+        const resp = await doRegisterApi(values)
+        console.log(resp)
+        navigate('/', { replace: false })
+      } catch(err) {
+        const error = err as Error
+        console.error(error)
+        setError(error.message)
+      }
+    },
+  });
+
   return (
     <section>
       <h2>Register Now!</h2>
       
       <div>
-        <form onSubmit={() => { history.pushState('','','/') }}>
+        <form onSubmit={formFormik.handleSubmit}>
           <div className="form-control w-full max-w-xs">
             <label htmlFor="inputEmail" className="label">
               <span className="label-text">Email</span>
             </label>
-            <input id="inputEmail" type="email" 
-              className="input input-bordered w-full max-w-xs" />
+            <input id="inputEmail" name="email" type="email" 
+              className="input input-bordered w-full max-w-xs" 
+              value={formFormik.values.email}
+              onChange={formFormik.handleChange}
+              />
+
+            {formFormik.errors.email && (
+              <p className="text-error text-sm font-bold w-50">
+                * {formFormik.errors.email}
+              </p>
+            )}
           </div>
           
           <div className="form-control w-full max-w-xs">
             <label htmlFor="inputUsername" className="label">
-              <span className="label-text">UserName</span>
+              <span className="label-text">Username</span>
             </label>
-            <input id="inputUsername" type="text" 
-              className="input input-bordered w-full max-w-xs" />
+            <input id="inputUsername" name="username" type="text" 
+              className="input input-bordered w-full max-w-xs" 
+              value={formFormik.values.username}
+              onChange={formFormik.handleChange}
+              />
+            
+            {formFormik.errors.username && (
+              <p className="text-error text-sm font-bold w-50">
+                * {formFormik.errors.username}
+              </p>
+            )}
           </div>
 
           <div className="form-control w-full max-w-xs">
             <label htmlFor="inputPassword" className="label">
               <span className="label-text">Password</span>
             </label>
-            <input id="inputPassword" type="password" 
-              className="input input-bordered w-full max-w-xs" />
+            <input id="inputPassword" name="password" type="password" 
+              className="input input-bordered w-full max-w-xs" 
+              value={formFormik.values.password}
+              onChange={formFormik.handleChange}
+              />
+
+            {formFormik.errors.password && (
+              <p className="text-error text-sm font-bold w-50">
+                * {formFormik.errors.password}
+              </p>
+            )}
           </div>
 
           <div className="form-control w-full max-w-xs">
             <label htmlFor="inputConfPassword" className="label">
               <span className="label-text">Confirm Password</span>
             </label>
-            <input id="inputConfPassword" type="password" 
-              className="input input-bordered w-full max-w-xs" />
+            <input id="inputConfPassword" name="confPassword" type="password" 
+              className="input input-bordered w-full max-w-xs" 
+              value={formFormik.values.confPassword}
+              onChange={formFormik.handleChange}
+              />
+
+            {formFormik.errors.confPassword && (
+              <p className="text-error text-sm font-bold w-50">
+                * {formFormik.errors.confPassword}
+              </p>
+            )}
           </div>
 
           <div className="mt-3 ml-28">
-            <button className="btn gap-2">
+            {error && (
+              <div className="min-h-8">
+                <p className="text-error text-left">
+                  {error}
+                </p>
+              </div>
+            )}
+
+            {isLoading && <p>Loading...</p>}
+            
+            <button type="submit" 
+              className="btn gap-2">
+              
               <Icon path={mdiAccountArrowUp} size={1} />
               Sign Up
             </button>
