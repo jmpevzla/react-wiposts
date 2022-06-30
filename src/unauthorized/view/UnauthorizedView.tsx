@@ -2,9 +2,9 @@ import { Link } from "react-router-dom"
 import { Icon } from "@mdi/react"
 import { mdiLock } from "@mdi/js"
 
-export default Unauthorizated
+export default UnauthorizatedView
 
-function Unauthorizated() {
+function UnauthorizatedView() {
   //const [progress] = usePageRedirect('/login')
   const progress = .5
 

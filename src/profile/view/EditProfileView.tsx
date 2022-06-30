@@ -1,9 +1,9 @@
 import { useFormik } from "formik"
 import { useState } from 'react'
 import * as Yup from 'yup'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Icon } from "@mdi/react"
-import { mdiAccountEdit } from "@mdi/js"
+import { mdiAccountEdit, mdiAccountBoxMultiple } from "@mdi/js"
 import large from '@/imgs/large.jpg'
 
 export default EditProfileView
@@ -12,7 +12,7 @@ function EditProfileView() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  //const navigate = useNavigate()
+  const navigate = useNavigate()
 
   const EditProfileSchema = Yup.object().shape({
     name: Yup.string(),
@@ -36,18 +36,25 @@ function EditProfileView() {
     validateOnChange: false,
     onSubmit: async (values) => {
       console.log(values)
+      navigate('/profile')
     }
   })
 
   return (
     <section>
-      <h2 className="text-red-600">Your Profile</h2>
+      <h2>Your Profile</h2>
 
       <div>
         <div>
           <img className="w-52" src={large} />
-          <a href='/profile/photo'>Photo</a>
-          <button type="button">Change Photo</button>
+          <div className="mt-2 flex flex-row gap-x-2">
+            <Link className="link" to='/profile/photo'>Photo</Link>
+            <button type="button"
+              className="btn gap-2">
+                <Icon path={mdiAccountBoxMultiple} size={1} />
+                Change Photo
+            </button>
+          </div>
         </div>
 
         <div>

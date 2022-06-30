@@ -4,9 +4,9 @@ import * as Yup from 'yup';
 import { Icon } from "@mdi/react"
 import { mdiKey } from "@mdi/js"
 
-export default ChangePassword
+export default ChangePasswordView
 
-function ChangePassword() {
+function ChangePasswordView() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
