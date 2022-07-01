@@ -22,3 +22,12 @@ function addResponse(axiosInstance: AxiosInstance,
 
 export const axiosAuth = Axios.create()
 addResponse(axiosAuth, responseOkInterceptor, responseErrorInterceptor)
+
+export const axios = Axios.create()
+addRequest(axios, (config) => {
+  config.headers = {
+    'no-auth': '1'
+  }
+  return config
+})
+addResponse(axios, responseOkInterceptor, responseErrorInterceptor)

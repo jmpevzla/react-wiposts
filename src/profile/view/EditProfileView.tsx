@@ -1,10 +1,12 @@
 import { useFormik } from "formik"
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { Link, useNavigate } from 'react-router-dom'
 import { Icon } from "@mdi/react"
 import { mdiAccountEdit, mdiAccountBoxMultiple } from "@mdi/js"
 import large from '@/imgs/large.jpg'
+import { editProfileApi, getProfileFullApi } from "../data/profileService"
+import { Profile } from "../types"
 
 export default EditProfileView
 
@@ -12,6 +14,16 @@ function EditProfileView() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [profile, setProfile] = useState<Profile>({
+    username: '',
+    email: '',
+    name: '',
+    phone: '',
+    birthday: '',
+    gender: '',
+    description: '',
+    website: ''
+  })
   const navigate = useNavigate()
 
   const EditProfileSchema = Yup.object().shape({
@@ -23,20 +35,50 @@ function EditProfileView() {
     website: Yup.string().url('Invalid URL')
   })
 
+  useEffect(() => {
+    async function load() {
+      try {
+        setIsLoading(true)
+        const res = await getProfileFullApi()
+        setProfile(res.info!)
+
+      } catch(err) {
+        const error = err as Error
+        setError(error.message)
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    load()
+    
+  }, [])
+
   const formFormik = useFormik({
     initialValues: {
-      name: '',
-      phone: '',
-      birthday: '',
-      gender: '',
-      description: '',
-      website: ''
+      name: profile.name,
+      phone: profile.phone,
+      birthday: profile.birthday,
+      gender: profile.gender,
+      description: profile.description,
+      website: profile.website
     },
+    enableReinitialize: true,
     validationSchema: EditProfileSchema,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values)
-      navigate('/profile')
+      try {
+        setIsLoading(true)
+        await editProfileApi(values)
+        //navigate('/profile')
+      } catch(err) {
+        const error = err as Error
+        setError(error.message)
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
     }
   })
 
@@ -66,7 +108,7 @@ function EditProfileView() {
               <input id="inputUsername" 
                 type="text" 
                 className="input input-bordered w-full max-w-xs" 
-                value="demo user"
+                value={profile.username}
                 disabled />
             </div>
 
@@ -78,7 +120,7 @@ function EditProfileView() {
                 <input id="inputEmail" 
                   type="email" 
                   className="input input-bordered w-full max-w-xs" 
-                  value="demo@wipost.io"
+                  value={profile.email}
                   disabled />
               </div>
               <Link className="link" to="/profile/change-email">Change Email</Link>
