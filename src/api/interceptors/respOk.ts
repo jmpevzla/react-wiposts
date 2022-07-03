@@ -6,6 +6,10 @@ export default responseOkInterceptor
 function responseOkInterceptor(response: AxiosResponse<TResponse>) { 
   const info: any = response.data
 
+  if (info.photo) {
+    info.photo = `${response.config.baseURL}/${info.photo}`
+  }
+
   response.data = {
     info
   }

@@ -4,7 +4,7 @@ import { Icon } from '@mdi/react'
 import { mdiAccountBoxMultiple } from '@mdi/js'
 import large from '@/imgs/large.jpg'
 import { ProfileShow } from '../types'
-import { getProfileApi } from '../data/profileService'
+import { getProfileApi, uploadPhotoApi } from '../data/profileService'
 
 export default ShowProfileView
 
@@ -17,7 +17,8 @@ function ShowProfileView() {
     name: '',
     posts: 0,
     description: '',
-    website: ''
+    website: '',
+    photo: ''
   })
 
   useEffect(() => {
@@ -42,6 +43,44 @@ function ShowProfileView() {
     
   }, [])
 
+  async function handleChangePhoto(ev: React.ChangeEvent<HTMLInputElement>) {
+    try {
+      setIsLoading(true)
+      setError('')
+      const files = ev.currentTarget.files
+      if (!(files && files.length > 0)) {
+        return
+      }
+
+      const photoFile = files[0]
+      switch(photoFile.type) {
+        case 'image/jpeg': 
+        case 'image/png':           
+        case 'image/gif': 
+        case 'image/svg+xml':
+          break
+        default:
+          throw new Error('File Invalid')
+      }
+
+      const resp = await uploadPhotoApi(photoFile)
+      setProfile({
+        ...profile,
+        photo: resp.info?.photo || ''
+      })
+
+      //navigate('/profile')
+    } catch(err) {
+      const error = err as Error
+      setError(error.message)
+      console.error(error)
+    } finally {
+      setIsLoading(false)
+    }
+
+  }
+
+
   return (
     <section>
       <h2>Show Profile</h2>
@@ -51,14 +90,21 @@ function ShowProfileView() {
       </div>
 
       <div className="mt-3">
-        <img className="w-52" src={large} />
+        <img className="w-52" src={profile.photo} />
         <div className="flex flex-row gap-x-2 mt-2">
           <Link className="link" to='/profile/photo'>Photo</Link>
-          <button type="button"
+          
+          <input id="inputPhoto" type="file" 
+              className="form-control-file hidden" 
+              name="photo" onChange={handleChangePhoto} 
+              accept=".jpg,.gif,.svg,.png" 
+              title="" value="" />
+            
+          <label htmlFor="inputPhoto"
             className="btn gap-2">
-              <Icon path={mdiAccountBoxMultiple} size={1} />
-              Change Photo
-          </button>
+            <Icon path={mdiAccountBoxMultiple} size={1} />
+            Change Photo
+          </label>
         </div>
       </div>
 

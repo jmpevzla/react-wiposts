@@ -38,8 +38,8 @@ function AppView() {
             <Route path="register" element={<RegisterView />} />
             <Route path="recover-password">
               <Route index element={<RecPasswordView />} />
-              <Route path="code" element={<RecPasswordCodeView />} />
-              <Route path="change" element={<RecPasswordChangeView />} />
+              <Route path=":tokenId/code" element={<RecPasswordCodeView />} />
+              <Route path=":tokenId/code/:code/change" element={<RecPasswordChangeView />} />
             </Route>
           </Route>
 

@@ -3,6 +3,8 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { endpoint } from '@/endpoint'
 import responseErrorInterceptor from './interceptors/respError'
 import responseOkInterceptor from './interceptors/respOk'
+import requestUploadInterceptor from './interceptors/reqUpload'
+// import responsePhotoInterceptor from './interceptors/respPhoto'
 
 Axios.defaults.baseURL = endpoint
 
@@ -31,3 +33,14 @@ addRequest(axios, (config) => {
   return config
 })
 addResponse(axios, responseOkInterceptor, responseErrorInterceptor)
+
+export const axiosUpload = Axios.create()
+addRequest(axiosUpload, (config) => {
+  config.headers = {
+    'no-auth': '1'
+  }
+  return config
+})
+addRequest(axiosUpload, requestUploadInterceptor)
+addResponse(axiosUpload, responseOkInterceptor, responseErrorInterceptor)
+//addResponse(axiosUpload, responsePhotoInterceptor)

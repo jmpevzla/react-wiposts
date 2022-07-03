@@ -4,6 +4,7 @@ import { Icon } from '@mdi/react'
 import { mdiXml } from '@mdi/js'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
+import { recoverPasswordApi } from '../data/recoverService'
 
 export default RecPasswordView
 
@@ -24,8 +25,21 @@ function RecPasswordView() {
     validationSchema: RecPassSchema,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values)
-      navigate('/recover-password/code')
+      //console.log(values)
+      //navigate('/recover-password/code')
+      try {
+        setIsLoading(true)
+        setError('')
+        const resp = await recoverPasswordApi(values)
+        console.log(resp.info?.tokenId)
+        //navigate('/profile')
+      } catch(err) {
+        const error = err as Error
+        setError(error.message)
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
     }
   })
 

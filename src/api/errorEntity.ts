@@ -1,5 +1,9 @@
 import type { AxiosError } from "axios";
 
-export interface TError extends AxiosError {
+interface ServerError {
+  error: string
+}
+
+export interface TError extends AxiosError<ServerError> {
   statusNum: number
 }

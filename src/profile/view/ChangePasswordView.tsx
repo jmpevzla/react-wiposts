@@ -3,6 +3,7 @@ import { useState } from 'react'
 import * as Yup from 'yup';
 import { Icon } from "@mdi/react"
 import { mdiKey } from "@mdi/js"
+import { changePasswordApi } from "../data/profileService";
 
 export default ChangePasswordView
 
@@ -15,7 +16,8 @@ function ChangePasswordView() {
   const ChangeSchema = Yup.object().shape({
     oldPassword: Yup.string().required('Required'),
     newPassword: Yup.string().required('Required'),
-    confNewPassword: Yup.string().required('Required'),
+    confNewPassword: Yup.string().required('Required')
+      .equals([Yup.ref('newPassword')], 'confirm must be equal to password'),
   })
 
   const formFormik = useFormik({
@@ -24,9 +26,21 @@ function ChangePasswordView() {
       newPassword: '',
       confNewPassword: ''
     },
+    validateOnChange: false,
     validationSchema: ChangeSchema,
     onSubmit: async (values) => {
-      console.log(values)
+      try {
+        setIsLoading(true)
+        setError('')
+        await changePasswordApi(values)
+        //navigate('/profile')
+      } catch(err) {
+        const error = err as Error
+        setError(error.message)
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
     }
   })
   

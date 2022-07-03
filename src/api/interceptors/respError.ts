@@ -7,7 +7,7 @@ function responseErrorInterceptor(error: TError) {
   let msg = ''
   switch(status) {
     case 400:
-      msg = 'Oops, Bad Request!' 
+      msg = 'Oops, Bad Request!, ' + error.response?.data.error
       break
     case 401:
       msg = 'Oops, You are Unauthorizated!'

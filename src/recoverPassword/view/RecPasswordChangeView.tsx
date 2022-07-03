@@ -1,9 +1,11 @@
 import { useFormik } from "formik"
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import * as Yup from 'yup'
 import { Icon } from "@mdi/react"
 import { mdiKey } from "@mdi/js"
+import { recoverPasswordChangeApi
+  , recoverPasswordCodeApi } from "../data/recoverService"
 
 export default RecPasswordChangeView
 
@@ -12,12 +14,36 @@ function RecPasswordChangeView() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const params = useParams()
 
   const RecPassChangeSchema = Yup.object().shape({
     newPassword: Yup.string().required('Required'),
     confNewPassword: Yup.string().required('Required')
       .equals([Yup.ref('newPassword')], 'Must be equal a new password'),
   })
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setIsLoading(true)
+        setError('')
+        const data = {
+          tokenId: params.tokenId || '',
+          code: params.code || ''
+        }
+        await recoverPasswordCodeApi(data)
+        console.log('token-code OK')
+        //navigate('/profile')
+      } catch(err) {
+        const error = err as Error
+        //setError(error.message)
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    load()
+  }, [])
 
   const formFormik = useFormik({
     initialValues: {
@@ -27,8 +53,26 @@ function RecPasswordChangeView() {
     validationSchema: RecPassChangeSchema,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values)
-      navigate('/login')
+      // console.log(values)
+      // navigate('/login')
+      try {
+        setIsLoading(true)
+        setError('')
+        const data = {
+          ...values,
+          tokenId: params.tokenId || '',
+          code: params.code || ''
+        }
+        await recoverPasswordChangeApi(data)
+        console.log('OK')
+        //navigate('/profile')
+      } catch(err) {
+        const error = err as Error
+        setError(error.message)
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
     }
   })
   

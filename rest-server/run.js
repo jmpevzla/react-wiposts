@@ -29,11 +29,31 @@ const register = require('./routes/register')
 const checkEmail = require('./routes/checkEmail')
 const photoUpload = require('./routes/photoUpload')
 
+const profileEdit = require('./routes/profile/edit')
+const profileChangePass = require('./routes/profile/changePassword');
+const profilePhotoUpload = require('./routes/profile/photoUpload');
+const recoverPassword = require('./routes/auth/recoverPassword');
+const recoverPasswordCode = require('./routes/auth/recoverPasswordCode');
+const recoverPasswordChange = require('./routes/auth/recoverPasswordChange');
+const recPassReCode = require('./routes/auth/recPassReCode');
+const recPassCheckToken = require('./routes/auth/recPassCheckToken');
+
+const profile = '/profile'
 const customRoutes = {
   login: '/login',
   register: '/register',
   checkEmail: '/check-email',
-  photoUpload: '/posts/:id/upload/'
+  photoUpload: '/posts/:id/upload/',
+
+  profileEdit: `${profile}/edit`,
+  profileChangePass: `${profile}/change-password`,
+  profilePhotoUpload: `${profile}/photo`,
+
+  recoverPassword: '/recover-password',
+  recoverPasswordCode: '/recover-password/:tokenId/code/:code',
+  recoverPasswordChange: '/recover-password/:tokenId/code/:code/change',
+  recPassReCode: '/recover-password/:tokenId/resend-code',
+  recPassCheckToken: '/recover-password/:tokenId',
 }
 
 function prettyPrint(argv, object, rules) {
@@ -74,6 +94,12 @@ function addCustomRoutes(app) {
   app.post(customRoutes.login, login)
   app.post(customRoutes.register, register)
   app.get(customRoutes.checkEmail, checkEmail)
+  
+  app.post(customRoutes.recoverPassword, recoverPassword)
+  app.get(customRoutes.recoverPasswordCode, recoverPasswordCode)
+  app.post(customRoutes.recoverPasswordChange, recoverPasswordChange)
+  app.post(customRoutes.recPassReCode, recPassReCode)
+  app.get(customRoutes.recPassCheckToken, recPassCheckToken)
 }
 
 /**
@@ -82,6 +108,10 @@ function addCustomRoutes(app) {
  */
 function addCustomRoutesAuth(app) {
   app.post(customRoutes.photoUpload, photoUpload)
+  
+  app.put(customRoutes.profileEdit, profileEdit)
+  app.put(customRoutes.profileChangePass, profileChangePass)
+  app.put(customRoutes.profilePhotoUpload, profilePhotoUpload)
 }
 
 function createApp(db, routes, middlewares, argv) {

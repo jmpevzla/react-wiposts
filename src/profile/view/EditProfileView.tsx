@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Icon } from "@mdi/react"
 import { mdiAccountEdit, mdiAccountBoxMultiple } from "@mdi/js"
 import large from '@/imgs/large.jpg'
-import { editProfileApi, getProfileFullApi } from "../data/profileService"
+import { editProfileApi, getProfileFullApi, uploadPhotoApi } from "../data/profileService"
 import { Profile } from "../types"
 
 export default EditProfileView
@@ -22,7 +22,8 @@ function EditProfileView() {
     birthday: '',
     gender: '',
     description: '',
-    website: ''
+    website: '',
+    photo: ''
   })
   const navigate = useNavigate()
 
@@ -55,6 +56,8 @@ function EditProfileView() {
     
   }, [])
 
+  
+
   const formFormik = useFormik({
     initialValues: {
       name: profile.name,
@@ -70,6 +73,7 @@ function EditProfileView() {
     onSubmit: async (values) => {
       try {
         setIsLoading(true)
+        setError('')
         await editProfileApi(values)
         //navigate('/profile')
       } catch(err) {
@@ -82,20 +86,64 @@ function EditProfileView() {
     }
   })
 
+  async function handleChangePhoto(ev: React.ChangeEvent<HTMLInputElement>) {
+    try {
+      setIsLoading(true)
+      setError('')
+      const files = ev.currentTarget.files
+      if (!(files && files.length > 0)) {
+        return
+      }
+
+      const photoFile = files[0]
+      switch(photoFile.type) {
+        case 'image/jpeg': 
+        case 'image/png':           
+        case 'image/gif': 
+        case 'image/svg+xml':
+          break
+        default:
+          throw new Error('File Invalid')
+      }
+
+      const resp = await uploadPhotoApi(photoFile)
+      setProfile({
+        ...profile,
+        photo: resp.info?.photo || ''
+      })
+
+      //navigate('/profile')
+    } catch(err) {
+      const error = err as Error
+      setError(error.message)
+      console.error(error)
+    } finally {
+      setIsLoading(false)
+    }
+
+  }
+
   return (
     <section>
       <h2>Your Profile</h2>
 
       <div>
         <div>
-          <img className="w-52" src={large} />
+          <img className="w-52" src={profile.photo} />
           <div className="mt-2 flex flex-row gap-x-2">
             <Link className="link" to='/profile/photo'>Photo</Link>
-            <button type="button"
+            
+            <input id="inputPhoto" type="file" 
+              className="form-control-file hidden" 
+              name="photo" onChange={handleChangePhoto} 
+              accept=".jpg,.gif,.svg,.png" 
+              title="" value="" />
+            
+            <label htmlFor="inputPhoto"
               className="btn gap-2">
-                <Icon path={mdiAccountBoxMultiple} size={1} />
-                Change Photo
-            </button>
+              <Icon path={mdiAccountBoxMultiple} size={1} />
+              Change Photo
+            </label>
           </div>
         </div>
 
