@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"
 import { Icon } from "@mdi/react"
-import { mdiAccountArrowUp } from "@mdi/js"
+import { mdiAccountArrowUp, mdiEye, mdiEyeOff  } from "@mdi/js"
 import { useState } from "react"
 import { useFormik } from "formik"
 import * as Yup from "yup"
@@ -13,6 +13,8 @@ function RegisterView() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfPassword, setShowConfPassword] = useState(false)
   const navigate = useNavigate()
 
   const RegisterSchema = Yup.object().shape({
@@ -33,6 +35,7 @@ function RegisterView() {
     validateOnChange: false,
     onSubmit: async (values) => {
       try {
+        setIsLoading(true)
         const resp = await doRegisterApi(values)
         console.log(resp)
         navigate('/', { replace: false })
@@ -40,9 +43,23 @@ function RegisterView() {
         const error = err as Error
         console.error(error)
         setError(error.message)
+      } finally {
+        setIsLoading(false)
       }
     },
   });
+
+  const toggleShowPassword = () => {
+    setShowPassword(value => {
+      return !value
+    })
+  }
+
+  const toggleShowConfPassword = () => {
+    setShowConfPassword(value => {
+      return !value
+    })
+  }
 
   return (
     <section>
@@ -88,11 +105,23 @@ function RegisterView() {
             <label htmlFor="inputPassword" className="label">
               <span className="label-text">Password</span>
             </label>
-            <input id="inputPassword" name="password" type="password" 
-              className="input input-bordered w-full max-w-xs" 
-              value={formFormik.values.password}
-              onChange={formFormik.handleChange}
-              />
+            <div className="flex flex-row">
+              <input id="inputPassword" name="password" 
+                type={showPassword ? "text" : "password"} 
+                className="input input-bordered w-full max-w-xs" 
+                value={formFormik.values.password}
+                onChange={formFormik.handleChange}
+                />
+              <button type="button"
+                className="ml-2 link link-primary"
+                onClick={toggleShowPassword}>
+                {showPassword ?
+                  <Icon path={mdiEyeOff} size={1} />
+                :
+                  <Icon path={mdiEye} size={1} />
+                }
+              </button>
+            </div>
 
             {formFormik.errors.password && (
               <p className="text-error text-sm font-bold w-50">
@@ -105,11 +134,23 @@ function RegisterView() {
             <label htmlFor="inputConfPassword" className="label">
               <span className="label-text">Confirm Password</span>
             </label>
-            <input id="inputConfPassword" name="confPassword" type="password" 
-              className="input input-bordered w-full max-w-xs" 
-              value={formFormik.values.confPassword}
-              onChange={formFormik.handleChange}
-              />
+            <div className="flex flex-row">
+              <input id="inputConfPassword" name="confPassword" 
+                type={showConfPassword ? "text" : "password"}  
+                className="input input-bordered w-full max-w-xs" 
+                value={formFormik.values.confPassword}
+                onChange={formFormik.handleChange}
+                />
+              <button type="button"
+                className="ml-2 link link-primary"
+                onClick={toggleShowConfPassword}>
+                {showConfPassword ?
+                  <Icon path={mdiEyeOff} size={1} />
+                :
+                  <Icon path={mdiEye} size={1} />
+                }
+              </button>
+            </div>
 
             {formFormik.errors.confPassword && (
               <p className="text-error text-sm font-bold w-50">
