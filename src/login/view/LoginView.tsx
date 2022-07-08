@@ -60,7 +60,8 @@ function LoginView() {
             <label htmlFor="inputEmail" className="label">
               <span className="label-text">Email</span>
             </label>
-            <input id="inputEmail" name="email" type="email" 
+            <input id="inputEmail" name="email" type="email"
+              data-test="email" 
               className="input input-bordered w-full max-w-xs" 
               value={formFormik.values.email}
               onChange={formFormik.handleChange} />
@@ -78,18 +79,20 @@ function LoginView() {
             </label>
             <div className="flex flex-row">
               <input id="inputPassword" name="password" 
+                data-test="password"
                 type={showPassword ? "text" : "password"}
                 className="input input-bordered w-full max-w-xs" 
                 value={formFormik.values.password}
                 onChange={formFormik.handleChange}
                 />
               <button type="button"
+                data-test="show-password"
                 className="ml-2 link link-primary"
                 onClick={toggleShowPassword}>
                 {showPassword ?
-                  <Icon path={mdiEyeOff} size={1} />
+                  <Icon data-test="hide-icon" path={mdiEyeOff} size={1} />
                 :
-                  <Icon path={mdiEye} size={1} />
+                  <Icon data-test="show-icon" path={mdiEye} size={1} />
                 }
               </button>
             </div>
@@ -103,15 +106,17 @@ function LoginView() {
 
           <div className="mt-3 ml-28">
             {error && (
-              <div className="min-h-8">  
-                  <p className="text-error text-left">
-                    {error}
-                  </p>  
+              <div className="min-h-8"
+                data-test="error">  
+                <p className="text-error text-left">
+                  {error}
+                </p>  
               </div>
             )}
 
             {isLoading && <p>Loading...</p>}
-            <button type="submit" 
+            <button type="submit"
+              data-test="login" 
               className="btn gap-2">
               
               <Icon path={mdiLogin} size={1} />
@@ -135,12 +140,16 @@ function LoginView() {
       <footer className="mt-3 border px-2">
         <div>
           <p className="font-bold">Don't you have a account?</p>
-          <Link className="link" to="/register">Register</Link>
+          <Link className="link" 
+            data-test="register"
+            to="/register">Register</Link>
         </div>
 
         <div>
           <p className="font-bold">You forgot your password?</p>
-          <Link className="link" to="/recover-password">Recover Password</Link>
+          <Link className="link" 
+            data-test="recover"
+            to="/recover-password">Recover Password</Link>
         </div>
       </footer>
     </section>
