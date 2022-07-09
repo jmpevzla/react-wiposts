@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -35,3 +36,9 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add('resetDB', () => {
+  cy.readFile('rest-server/db.tests.json').then((text) => {
+    cy.writeFile('rest-server/db.json', text).end()
+  })
+})

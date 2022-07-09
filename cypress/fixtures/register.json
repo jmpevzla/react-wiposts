@@ -1,0 +1,7 @@
+{
+  "email": "josetests@tests.com",
+  "username": "josetests",
+  "password": "123456",
+  "confPassword": "123456",
+  "confPasswordError": "1234567"
+}

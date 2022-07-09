@@ -22,6 +22,7 @@ function RegisterView() {
     username: Yup.string().required('Required'),
     password: Yup.string().required('Required'),
     confPassword: Yup.string().required('Required')
+      .equals([Yup.ref('password')], 'confirm must be equal to password')
   })
 
   const formFormik = useFormik<Register>({
@@ -71,14 +72,16 @@ function RegisterView() {
             <label htmlFor="inputEmail" className="label">
               <span className="label-text">Email</span>
             </label>
-            <input id="inputEmail" name="email" type="email" 
+            <input id="inputEmail" name="email" type="email"
+              data-test="email" 
               className="input input-bordered w-full max-w-xs" 
               value={formFormik.values.email}
               onChange={formFormik.handleChange}
               />
 
             {formFormik.errors.email && (
-              <p className="text-error text-sm font-bold w-50">
+              <p className="text-error text-sm font-bold w-50"
+                data-test="email-error">
                 * {formFormik.errors.email}
               </p>
             )}
@@ -88,14 +91,16 @@ function RegisterView() {
             <label htmlFor="inputUsername" className="label">
               <span className="label-text">Username</span>
             </label>
-            <input id="inputUsername" name="username" type="text" 
+            <input id="inputUsername" name="username" type="text"
+              data-test="username" 
               className="input input-bordered w-full max-w-xs" 
               value={formFormik.values.username}
               onChange={formFormik.handleChange}
               />
             
             {formFormik.errors.username && (
-              <p className="text-error text-sm font-bold w-50">
+              <p className="text-error text-sm font-bold w-50"
+                data-test="username-error">
                 * {formFormik.errors.username}
               </p>
             )}
@@ -107,24 +112,27 @@ function RegisterView() {
             </label>
             <div className="flex flex-row">
               <input id="inputPassword" name="password" 
-                type={showPassword ? "text" : "password"} 
+                type={showPassword ? "text" : "password"}
+                data-test="password"  
                 className="input input-bordered w-full max-w-xs" 
                 value={formFormik.values.password}
                 onChange={formFormik.handleChange}
                 />
               <button type="button"
+                data-test="show-password"
                 className="ml-2 link link-primary"
                 onClick={toggleShowPassword}>
                 {showPassword ?
-                  <Icon path={mdiEyeOff} size={1} />
+                  <Icon data-test="hide-icon" path={mdiEyeOff} size={1} />
                 :
-                  <Icon path={mdiEye} size={1} />
+                  <Icon data-test="show-icon" path={mdiEye} size={1} />
                 }
               </button>
             </div>
 
             {formFormik.errors.password && (
-              <p className="text-error text-sm font-bold w-50">
+              <p className="text-error text-sm font-bold w-50"
+                data-test="password-error">
                 * {formFormik.errors.password}
               </p>
             )}
@@ -136,24 +144,27 @@ function RegisterView() {
             </label>
             <div className="flex flex-row">
               <input id="inputConfPassword" name="confPassword" 
-                type={showConfPassword ? "text" : "password"}  
+                type={showConfPassword ? "text" : "password"}
+                data-test="conf-password"   
                 className="input input-bordered w-full max-w-xs" 
                 value={formFormik.values.confPassword}
                 onChange={formFormik.handleChange}
                 />
               <button type="button"
+                data-test="show-conf-password"
                 className="ml-2 link link-primary"
                 onClick={toggleShowConfPassword}>
                 {showConfPassword ?
-                  <Icon path={mdiEyeOff} size={1} />
+                  <Icon data-test="hide-icon" path={mdiEyeOff} size={1} />
                 :
-                  <Icon path={mdiEye} size={1} />
+                  <Icon data-test="show-icon" path={mdiEye} size={1} />
                 }
               </button>
             </div>
 
             {formFormik.errors.confPassword && (
-              <p className="text-error text-sm font-bold w-50">
+              <p className="text-error text-sm font-bold w-50"
+                data-test="conf-password-error">
                 * {formFormik.errors.confPassword}
               </p>
             )}
@@ -161,7 +172,8 @@ function RegisterView() {
 
           <div className="mt-3 ml-28">
             {error && (
-              <div className="min-h-8">
+              <div className="min-h-8" 
+                data-test="error">
                 <p className="text-error text-left">
                   {error}
                 </p>
@@ -171,7 +183,8 @@ function RegisterView() {
             {isLoading && <p>Loading...</p>}
             
             <button type="submit" 
-              className="btn gap-2">
+              className="btn gap-2"
+              data-test="register">
               
               <Icon path={mdiAccountArrowUp} size={1} />
               Sign Up
@@ -194,7 +207,7 @@ function RegisterView() {
       <footer className="mt-3 border px-2">
         <div>
           <p className="font-bold">Do you have a account?</p>
-          <Link className="link" to="/login">Login</Link>
+          <Link data-test="login" className="link" to="/login">Login</Link>
         </div>
       </footer>
     </section>

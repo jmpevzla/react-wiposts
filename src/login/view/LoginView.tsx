@@ -67,7 +67,8 @@ function LoginView() {
               onChange={formFormik.handleChange} />
 
             {formFormik.errors.email && (
-              <p className="text-error text-sm font-bold w-50">
+              <p className="text-error text-sm font-bold w-50"
+                data-test="email-error">
                 * {formFormik.errors.email}
               </p>
             )}
@@ -98,7 +99,8 @@ function LoginView() {
             </div>
             
             {formFormik.errors.password && (
-              <p className="text-error text-sm font-bold w-50">
+              <p className="text-error text-sm font-bold w-50"
+                data-test="password-error">
                 * {formFormik.errors.password}
               </p>
             )}

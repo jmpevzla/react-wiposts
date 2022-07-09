@@ -54,6 +54,7 @@ const customRoutes = {
   recoverPasswordChange: '/recover-password/:tokenId/code/:code/change',
   recPassReCode: '/recover-password/:tokenId/resend-code',
   recPassCheckToken: '/recover-password/:tokenId',
+
 }
 
 function prettyPrint(argv, object, rules) {
