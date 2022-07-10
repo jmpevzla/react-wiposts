@@ -25,6 +25,7 @@ import UnauthorizatedView from "@/unauthorized/view/UnauthorizedView";
 import AuthLayout from "@/layout/view/AuthLayout";
 import MainLayout from "@/layout/view/MainLayout";
 import NotificationsView from "@/notifications/view/NotificationsView";
+import ChangeEmailView from "@/profile/view/ChangeEmailView";
 
 export default AppView
 
@@ -50,6 +51,7 @@ function AppView() {
               <Route path="edit" element={<EditProfileView />} />
               <Route path="photo" element={<PhotoProfileView />} />
               <Route path="change-password" element={<ChangePasswordView />} />
+              <Route path="change-email" element={<ChangeEmailView />} />
               <Route path=":id" element={<ShowProfileView />} />
             </Route>
             <Route path="post/:id">

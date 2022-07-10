@@ -95,7 +95,7 @@ function ShowProfileView() {
         <img data-test="photo" 
           className="w-52" src={profile.photo} />
         <div className="flex flex-row gap-x-2 mt-2">
-          <Link className="link" to='/profile/photo'>Photo</Link>
+          <Link data-test="link-photo" className="link" to='/profile/photo'>Photo</Link>
           
           <input id="inputPhoto" type="file" 
               className="form-control-file hidden"

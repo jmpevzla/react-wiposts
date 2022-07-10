@@ -2,6 +2,7 @@
 /// <reference types="../../support" />
 
 import routes from '../../fixtures/routes.js'
+import { fullRoute } from '../../support/functions'
 
 describe('Profile: Show Profile', () => {
 
@@ -16,6 +17,7 @@ describe('Profile: Show Profile', () => {
   it('displays show profile elements', () => {
     cy.get('[data-test=edit-profile]').should('exist')
     cy.get('[data-test=photo]').should('exist')
+    cy.get('[data-test=link-photo]').should('exist')
     cy.get('[data-test=input-photo').should('exist')
     cy.get('[data-test=change-photo').should('exist')
 
@@ -36,6 +38,16 @@ describe('Profile: Show Profile', () => {
     
     cy.get('[data-test=error').should('exist')
 
+  })
+
+  it('can go to edit profile', () => {
+    cy.get('[data-test=edit-profile]').click()
+    cy.url().should('equal', fullRoute(routes.profile.edit))
+  })
+
+  it('can go to photo profile', () => {
+    cy.get('[data-test=link-photo]').click()
+    cy.url().should('equal', fullRoute(routes.profile.photo))
   })
 
 })

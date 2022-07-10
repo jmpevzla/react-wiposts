@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Icon } from '@mdi/react'
 import { mdiAccountBoxMultiple } from '@mdi/js'
-import large from '@/imgs/large.jpg'
 import { useEffect, useState } from 'react'
 import { getProfileApi, uploadPhotoApi } from '../data/profileService'
 
@@ -72,23 +71,39 @@ function PhotoProfileView() {
       <h2>Your Avatar</h2>
 
       <div className="mt-3">
-        <img className="max-w-full" src={photo} />
+        <img data-test="photo" 
+          className="max-w-full" src={photo} />
         <input id="inputPhoto" type="file" 
               className="form-control-file hidden" 
+              data-test="input-photo"
               name="photo" onChange={handleChangePhoto} 
               accept=".jpg,.gif,.svg,.png" 
               title="" value="" />
             
         <label htmlFor="inputPhoto"
+          data-test="change-photo"
           className="btn mt-3 gap-2">
           <Icon path={mdiAccountBoxMultiple} size={1} />
           Change Photo
         </label>
       </div>
 
+      <div className="mt-3 ml-28">
+        {error && (
+          <div className="min-h-8"
+            data-test="error">  
+            <p className="text-error text-left">
+              {error}
+            </p>  
+          </div>
+        )}
+
+        {isLoading && <p>Loading...</p>}
+      </div>
+
       <footer className="mt-3 flex flex-row gap-x-2">
-        <Link className="link" to='/'>Home</Link>
-        <Link className="link" to='/profile'>Profile</Link>
+        <Link data-test="home" className="link" to='/'>Home</Link>
+        <Link data-test="profile" className="link" to='/profile'>Profile</Link>
       </footer>
     </section>
   )

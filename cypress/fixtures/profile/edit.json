@@ -1,0 +1,9 @@
+{
+  "fullName": "Mary Smith",
+  "phone": "+1-555-2568745",
+  "birthday": "1990-02-20",
+  "gender": "Female",
+  "description": "a Tour Guide",
+  "website": "http://www.marytravel.com",
+  "websiteError": "mary@ssss."
+}

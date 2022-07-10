@@ -6,7 +6,10 @@ export default {
   register: "/register",
   recover: "/recover-password",
   profile: {    
-    "changePassword": `${profile}/change-password`,
-    "show": `${profile}`
+    changePassword: `${profile}/change-password`,
+    show: `${profile}`,
+    photo: `${profile}/photo`,
+    edit: `${profile}/edit`,
+    changeEmail: `${profile}/change-email`
   }
 }
