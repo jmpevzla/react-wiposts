@@ -1,7 +1,7 @@
 declare global {
   namespace Cypress {
     interface Chainable {
-      resetDB(): Chainable<void>  
+      resetDB(): Chainable<void>,
     }
   }
 }

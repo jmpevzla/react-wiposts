@@ -42,3 +42,4 @@ Cypress.Commands.add('resetDB', () => {
     cy.writeFile('rest-server/db.json', text).end()
   })
 })
+

@@ -32,6 +32,7 @@ function ShowProfileView() {
 
       } catch(err) {
         const error = err as Error
+        console.log(error)
         setError(error.message)
         console.error(error)
       } finally {
@@ -86,21 +87,25 @@ function ShowProfileView() {
       <h2>Show Profile</h2>
 
       <div>
-        <Link className="link" to="/profile/edit">Edit Profile</Link>
+        <Link data-test="edit-profile" 
+          className="link" to="/profile/edit">Edit Profile</Link>
       </div>
 
       <div className="mt-3">
-        <img className="w-52" src={profile.photo} />
+        <img data-test="photo" 
+          className="w-52" src={profile.photo} />
         <div className="flex flex-row gap-x-2 mt-2">
           <Link className="link" to='/profile/photo'>Photo</Link>
           
           <input id="inputPhoto" type="file" 
-              className="form-control-file hidden" 
+              className="form-control-file hidden"
+              data-test="input-photo" 
               name="photo" onChange={handleChangePhoto} 
               accept=".jpg,.gif,.svg,.png" 
               title="" value="" />
             
           <label htmlFor="inputPhoto"
+            data-test="change-photo"
             className="btn gap-2">
             <Icon path={mdiAccountBoxMultiple} size={1} />
             Change Photo
@@ -109,16 +114,19 @@ function ShowProfileView() {
       </div>
 
       <div className="mt-3">
-        <p className="text-sm">{profile.username}</p>
-        <p className="text-sm">{profile.posts} posts</p>
-        <p className="text-sm">{profile.name}</p>
-        <p className="text-sm">{profile.description}</p>
-        <a href="" target="_blank" rel="noreferrer noopener">{profile.website}</a>
+        <p data-test="username" className="text-sm">{profile.username}</p>
+        <p data-test="num-posts" className="text-sm">{profile.posts} posts</p>
+        <p data-test="name" className="text-sm">{profile.name}</p>
+        <p data-test="description" className="text-sm">{profile.description}</p>
+        <a data-test="website" 
+          href="" target="_blank" 
+          rel="noreferrer noopener">{profile.website}</a>
       </div>
 
       <div className="mt-3 ml-28">
         {error && (
-          <div className="min-h-8">  
+          <div className="min-h-8"
+            data-test="error">  
             <p className="text-error text-left">
               {error}
             </p>  
