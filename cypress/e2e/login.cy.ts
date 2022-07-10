@@ -1,15 +1,19 @@
 /// <reference types="cypress" />
+/// <reference types="../support" />
 
 import { fullRoute, showPassword
   , hidePassword } from '../support/functions'
-import { login, home
-  , recover, register } from '../fixtures/routes.json'
+import routes from '../fixtures/routes.js'
 import { email, password
   , passwordError } from '../fixtures/login.json'
 
 describe('Login Page', () => {
   beforeEach(() => {
-    cy.visit(login)
+    cy.resetDB()
+  })
+  
+  beforeEach(() => {
+    cy.visit(routes.login)
   })
 
   it('displays email, password & login elements', () => {
@@ -34,7 +38,7 @@ describe('Login Page', () => {
     cy.get('[data-test=password]').first().type(`${password}`)
 
     cy.get('[data-test=login]').first().click()
-    cy.url().should('equal', fullRoute(home))
+    cy.url().should('equal', fullRoute(routes.home))
   })
 
   it('can not do login if input data is not valid', () => {
@@ -42,7 +46,7 @@ describe('Login Page', () => {
     cy.get('[data-test=password]').first().type(`${passwordError}`)
 
     cy.get('[data-test=login]').first().click()
-    cy.url().should('equal', fullRoute(login))
+    cy.url().should('equal', fullRoute(routes.login))
     cy.get('[data-test=error]').should('exist')
   })
 
@@ -51,16 +55,16 @@ describe('Login Page', () => {
     
     cy.get('[data-test=email-error]').should('exist')
     cy.get('[data-test=password-error]').should('exist')
-    cy.url().should('equal', fullRoute(login))
+    cy.url().should('equal', fullRoute(routes.login))
   })
 
   it('can go to register', () => {
     cy.get('[data-test=register]').first().click()
-    cy.url().should('equal', fullRoute(register))
+    cy.url().should('equal', fullRoute(routes.register))
   })
 
   it('can go to recover password', () => {
     cy.get('[data-test=recover]').first().click()
-    cy.url().should('equal', fullRoute(recover))
+    cy.url().should('equal', fullRoute(routes.recover))
   })
 })

@@ -1,10 +1,10 @@
 /// <reference types="cypress" />
+/// <reference types="../support" />
 
 import { fullRoute 
   , showPassword, hidePassword
   ,showConfPassword, hideConfPassword } from '../support/functions'
-import { login, home
-  , register } from '../fixtures/routes.json'
+import routes from '../fixtures/routes.js'
 import { username, email, password
   , confPassword, confPasswordError } from '../fixtures/register.json'
 
@@ -14,7 +14,7 @@ describe('Register Page', () => {
   })
 
   beforeEach(() => {
-    cy.visit(register)
+    cy.visit(routes.register)
   })
 
   it('displays email, username, password, confPassword & register elements', () => {
@@ -42,7 +42,7 @@ describe('Register Page', () => {
     cy.get('[data-test=conf-password]').should('have.attr', 'type', 'text')
   })
 
-  it('hide password if hide button is clicked', () => {
+  it('hide confirm password if hide button is clicked', () => {
     hideConfPassword()
     cy.get('[data-test=conf-password]').should('have.attr', 'type', 'password')
   })
@@ -54,7 +54,7 @@ describe('Register Page', () => {
     cy.get('[data-test=conf-password]').first().type(`${confPassword}`)
 
     cy.get('[data-test=register]').first().click()
-    cy.url().should('equal', fullRoute(home))
+    cy.url().should('equal', fullRoute(routes.home))
   })
 
   it('can not do register if confirm password is not valid', () => {
@@ -65,7 +65,7 @@ describe('Register Page', () => {
 
     cy.get('[data-test=register]').first().click()
     cy.get('[data-test=conf-password-error]').should('exist')
-    cy.url().should('equal', fullRoute(register))
+    cy.url().should('equal', fullRoute(routes.register))
   })
 
   it('can not do register if fields are empty', () => {
@@ -75,12 +75,12 @@ describe('Register Page', () => {
     cy.get('[data-test=username-error]').should('exist')
     cy.get('[data-test=password-error]').should('exist')
     cy.get('[data-test=conf-password-error]').should('exist')
-    cy.url().should('equal', fullRoute(register))
+    cy.url().should('equal', fullRoute(routes.register))
   })
 
   it('can go to login', () => {
     cy.get('[data-test=login]').first().click()
-    cy.url().should('equal', fullRoute(login))
+    cy.url().should('equal', fullRoute(routes.login))
   })
 
 })
