@@ -3,3 +3,4 @@ db.*
 db2.json
 .env
 public/uploads/*
+public/uploads-tests/*

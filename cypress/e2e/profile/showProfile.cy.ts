@@ -6,7 +6,7 @@ import { fullRoute } from '../../support/functions'
 
 describe('Profile: Show Profile', () => {
 
-  beforeEach(() => {
+  before(() => {
     cy.resetDB()
   })
   

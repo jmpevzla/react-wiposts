@@ -12,7 +12,7 @@ import {
 
 describe('Profile: Edit Profile', () => {
 
-  beforeEach(() => {
+  before(() => {
     cy.resetDB()
   })
   

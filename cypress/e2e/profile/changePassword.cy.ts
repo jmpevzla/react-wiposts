@@ -11,7 +11,7 @@ import { oldPassword, password
 
 describe('Profile: Change Password', () => {
 
-  beforeEach(() => {
+  before(() => {
     cy.resetDB()
   })
   
