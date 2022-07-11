@@ -3,6 +3,7 @@
 
 import routes from '../../fixtures/routes.js'
 import { fullRoute } from '../../support/functions'
+import { resetUploadFolder } from '../../support/utils'
 import { 
   fullName, description,
   gender, birthday,
@@ -14,6 +15,7 @@ describe('Profile: Edit Profile', () => {
 
   before(() => {
     cy.resetDB()
+    resetUploadFolder()
   })
   
   beforeEach(() => {
@@ -102,6 +104,19 @@ describe('Profile: Edit Profile', () => {
       website().should('have.value', value)
     }) 
     
+  })
+
+  it('can change photo', () => {
+
+    cy.waitUntil(function() {
+      return cy.get('[data-test=photo]').should('not.have.attr', 'src', '');
+    })
+   
+    cy.get('[data-test=photo]').invoke('attr', 'src').then(photo => {
+      cy.get('[data-test=input-photo]').selectFile('cypress/fixtures/profile/my-photo.jpg', { force: true })
+      cy.get('[data-test=photo]').should('not.have.attr', 'src', photo)
+    })
+
   })
 
 })

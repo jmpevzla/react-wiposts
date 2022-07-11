@@ -3,11 +3,13 @@
 
 import routes from '../../fixtures/routes.js'
 import { fullRoute } from '../../support/functions'
+import { resetUploadFolder } from '../../support/utils'
 
 describe('Profile: Show Profile', () => {
 
   before(() => {
     cy.resetDB()
+    resetUploadFolder()
   })
   
   beforeEach(() => {
@@ -48,6 +50,19 @@ describe('Profile: Show Profile', () => {
   it('can go to photo profile', () => {
     cy.get('[data-test=link-photo]').click()
     cy.url().should('equal', fullRoute(routes.profile.photo))
+  })
+
+  it('can change photo', () => {
+
+    cy.waitUntil(function() {
+      return cy.get('[data-test=photo]').should('not.have.attr', 'src', '');
+    })
+   
+    cy.get('[data-test=photo]').invoke('attr', 'src').then(photo => {
+      cy.get('[data-test=input-photo]').selectFile('cypress/fixtures/profile/my-photo.jpg', { force: true })
+      cy.get('[data-test=photo]').should('not.have.attr', 'src', photo)
+    })
+
   })
 
 })
