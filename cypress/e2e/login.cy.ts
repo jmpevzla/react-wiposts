@@ -65,6 +65,6 @@ describe('Login Page', () => {
 
   it('can go to recover password', () => {
     cy.get('[data-test=recover]').first().click()
-    cy.url().should('equal', fullRoute(routes.recover))
+    cy.url().should('equal', fullRoute(routes.recover.init))
   })
 })

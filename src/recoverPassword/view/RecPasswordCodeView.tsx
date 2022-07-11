@@ -13,6 +13,7 @@ function RecPasswordCodeView() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [resultCode, setResultCode] = useState(false)
   const navigate = useNavigate()
   const params = useParams()
 
@@ -60,7 +61,7 @@ function RecPasswordCodeView() {
         }
         await recoverPasswordCodeApi(data)
         console.log('OK')
-        //navigate('/profile')
+        navigate(`/recover-password/${params.tokenId}/code/${values.code.toUpperCase()}/change`)
       } catch(err) {
         const error = err as Error
         setError(error.message)
@@ -73,6 +74,7 @@ function RecPasswordCodeView() {
 
   async function resendCode() {
     try {
+      setResultCode(false)
       setIsLoading(true)
       setError('')
       const data = {
@@ -80,6 +82,7 @@ function RecPasswordCodeView() {
       }
       await recoverPasswordReSendCodeApi(data)
       console.log('OK')
+      setResultCode(true)
       //navigate('/profile')
     } catch(err) {
       const error = err as Error
@@ -102,13 +105,15 @@ function RecPasswordCodeView() {
               <span className="label-text">Code</span>
             </label>
             <input id="inputCode" 
-              name="code" type="text" 
+              name="code" type="text"
+              data-test="code" 
               className="input input-bordered w-full max-w-xs uppercase" 
               value={formFormik.values.code}
               onChange={formFormik.handleChange} />
 
             {formFormik.errors.code && (
-              <p className="text-error text-sm font-bold w-50">
+              <p className="text-error text-sm font-bold w-50"
+                data-test="code-error">
                 * {formFormik.errors.code}
               </p>
             )}
@@ -116,7 +121,8 @@ function RecPasswordCodeView() {
     
           <div className="mt-3">
             {error && (
-              <div className="min-h-8">  
+              <div className="min-h-8"
+                data-test="error">  
                 <p className="text-error text-left">
                   {error}
                 </p>  
@@ -124,16 +130,22 @@ function RecPasswordCodeView() {
             )}
 
             {isLoading && <p>Loading...</p>}
+
+            {resultCode && (
+              <div data-test="result-code" />
+            )}
           </div>
 
           <div className="flex flex-row gap-x-2 mt-3">
-            <button type="submit" 
+            <button type="submit"
+              data-test="create" 
               className="btn gap-2">
               <Icon path={mdiLockPlus} size={1} />
               Create new password
             </button>
 
             <button type="button"
+              data-test="send-code"
               className="btn gap-2"
               onClick={resendCode}>
               <Icon path={mdiLockReset} size={1} />
@@ -145,7 +157,8 @@ function RecPasswordCodeView() {
       </div>
 
       <footer className="mt-3">
-        <Link className="link" to="/login">Return to Login</Link>
+        <Link data-test="login" 
+          className="link" to="/login">Return to Login</Link>
       </footer>
     </section>
   )

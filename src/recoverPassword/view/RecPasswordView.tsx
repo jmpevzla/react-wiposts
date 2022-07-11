@@ -31,8 +31,9 @@ function RecPasswordView() {
         setIsLoading(true)
         setError('')
         const resp = await recoverPasswordApi(values)
-        console.log(resp.info?.tokenId)
-        //navigate('/profile')
+        const tokenId = resp.info?.tokenId
+        console.log(tokenId)
+        navigate(`/recover-password/${tokenId}/code`)
       } catch(err) {
         const error = err as Error
         setError(error.message)
@@ -55,13 +56,15 @@ function RecPasswordView() {
               <span className="label-text">Email</span>
             </label>
             <input id="inputEmail" 
-              name="email" type="email" 
+              name="email" type="email"
+              data-test="email" 
               className="input input-bordered w-full max-w-xs" 
               value={formFormik.values.email}
               onChange={formFormik.handleChange} />
 
             {formFormik.errors.email && (
-              <p className="text-error text-sm font-bold w-50">
+              <p className="text-error text-sm font-bold w-50"
+                data-test="email-error">
                 * {formFormik.errors.email}
               </p>
             )}
@@ -69,7 +72,8 @@ function RecPasswordView() {
 
           <div className="mt-3">
             {error && (
-              <div className="min-h-8">  
+              <div className="min-h-8"
+                data-test="error">  
                 <p className="text-error text-left">
                   {error}
                 </p>  
@@ -78,7 +82,8 @@ function RecPasswordView() {
 
             {isLoading && <p>Loading...</p>}
 
-            <button type="submit" 
+            <button type="submit"
+              data-test="recover" 
               className="btn gap-2">
                 <Icon path={mdiXml} size={1} />
                 Get Code
@@ -88,7 +93,8 @@ function RecPasswordView() {
       </div>
 
       <footer className="mt-3">
-        <Link className="link" to="/login">Return to Login</Link>
+        <Link data-test="login"
+          className="link" to="/login">Return to Login</Link>
       </footer>
     </section>
   )
