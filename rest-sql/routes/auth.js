@@ -13,7 +13,7 @@ router.post('/login', function(req, res){
   db.serialize(() => {
     
     const keys = [
-      'name', 'username'
+      'id', 'name', 'username'
       , 'email', 'photo'
     ]
     
@@ -31,7 +31,7 @@ router.post('/login', function(req, res){
       }
 
       if(!row) {
-        return res.status(400).end()
+        return res.status(401).end()
       }
 
       const rw = { ...row, photo: getPhoto(folderUsers, row.photo) }

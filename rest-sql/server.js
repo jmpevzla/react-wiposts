@@ -1,11 +1,13 @@
 const express = require('express');
 const http = require('http');
 const morgan = require("morgan");
+const cors = require('cors')
 
 const app = express();
 const port = 4000;
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(cors())
 app.use('/public', express.static('public'))
 
 // routes

@@ -6,7 +6,7 @@ import { axiosAuth } from '@/api/getAxios'
 
 export async function doLoginApi(data: Login): Promise<TAuthResponse> {
   const res = await axiosAuth.post<any, AxiosResponse<TAuthResponse>, Login>
-    (`/login`, data)
+    (`/auth/login`, data)
 
   return res.data
 }
