@@ -1,9 +1,7 @@
 node_modules
-data.sqlite*
+for_tests
+data.sqlite
 .env
 
 public/uploads/users/*
 public/uploads/posts/*
-
-public/uploads-tests/users/*
-public/uploads-tests/posts/*
