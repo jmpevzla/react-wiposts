@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Icon } from '@mdi/react'
 import { mdiAccountBoxMultiple } from '@mdi/js'
-import large from '@/imgs/large.jpg'
 import { ProfileShow } from '../types'
-import { getProfileApi, uploadPhotoApi } from '../data/profileService'
+import { getProfileByUsernameApi, uploadPhotoApi } from '../data/profileService'
 
 export default ShowProfileView
 
@@ -15,7 +14,7 @@ function ShowProfileView() {
   const [profile, setProfile] = useState<ProfileShow>({
     username: '',
     name: '',
-    posts: 0,
+    numPosts: 0,
     description: '',
     website: '',
     photo: ''
@@ -25,10 +24,9 @@ function ShowProfileView() {
     async function load() {
       try {
         setIsLoading(true)
-        const res = await getProfileApi(1)
+        const res = await getProfileByUsernameApi('joseperez')
         const data = res.info!
-        data.posts = 10
-        setProfile(res.info!)
+        setProfile(data)
 
       } catch(err) {
         const error = err as Error
@@ -115,7 +113,7 @@ function ShowProfileView() {
 
       <div className="mt-3">
         <p data-test="username" className="text-sm">{profile.username}</p>
-        <p data-test="num-posts" className="text-sm">{profile.posts} posts</p>
+        <p data-test="num-posts" className="text-sm">{profile.numPosts} posts</p>
         <p data-test="name" className="text-sm">{profile.name}</p>
         <p data-test="description" className="text-sm">{profile.description}</p>
         <a data-test="website" 

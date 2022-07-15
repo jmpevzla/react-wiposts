@@ -12,16 +12,16 @@ export async function getProfileApi(): Promise<ProfileResponse> {
   return res.data
 }
 
-// export async function getProfileByUsernameApi(username: string): Promise<ProfileShowResponse> {
-//   const res = await axios.get<any, AxiosResponse<ProfileShowResponse>>
-//     (`/users/${id}`)
+export async function getProfileByUsernameApi(username: string): Promise<ProfileShowResponse> {
+  const res = await axios.get<any, AxiosResponse<ProfileShowResponse>>
+    (`/users/username/${username}`)
 
-//   return res.data
-// }
+  return res.data
+}
 
 export async function editProfileApi(profile: ProfileEdit): Promise<ProfileResponse> {
   const res = await axios.put<any, AxiosResponse<ProfileResponse>, ProfileEdit>
-    (`/profile/edit`, profile)
+    (`/users/info`, profile)
 
   return res.data
 }
@@ -36,7 +36,7 @@ export async function uploadPhotoApi(photo: File): Promise<PhotoResponse> {
   formData.append('photo', photo)
 
   const res = await axiosUpload.put<any, AxiosResponse<PhotoResponse>, FormData>
-    (`/profile/photo`, formData)
+    (`/users/photo`, formData)
 
   return res.data
 }

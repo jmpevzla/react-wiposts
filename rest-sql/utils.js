@@ -1,4 +1,4 @@
-const uploads = 'uploads'
+const uploads = 'public/uploads'
 const folderUsers = `${uploads}/users/`
 const folderPosts = `${uploads}/posts/`
 

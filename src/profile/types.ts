@@ -15,7 +15,7 @@ export interface Profile {
 export interface ProfileShow {
   username: string,
   name: string,
-  posts: number,
+  numPosts: number,
   description: string,
   website: string,
   photo: string

@@ -48,6 +48,7 @@ router.get('/', function(req, res){
     st.get(params, function (err, row) {
       if (err) {
         console.error(err)
+        return res.status(500).end()
       }
 
       if(!row) {
@@ -204,6 +205,46 @@ router.put('/change-password', function(req, res){
     })
     st.finalize()
   })
+});
+
+router.get('/username/:username', function(req, res){
+  const db = getDb()
+  const $username = req.params.username
+
+  db.serialize(() => {
+    const keys = [
+      'name', 'description', 'website'
+      , 'username', 'photo', 'numPosts'
+    ]
+    
+    const $keys = keys.join(', ')
+    const params = { $username }
+
+    const st = db.prepare(
+      `SELECT ${$keys} 
+      FROM users 
+      WHERE username = $username`
+    );
+
+    st.get(params, function (err, row) {
+      if (err) {
+        console.error(err)
+        return res.status(500).end()
+      }
+
+      if(!row) {
+        return res.status(400).end()
+      }
+
+      const rw = { ...row, photo: getPhoto(folderUsers, row.photo) }
+      return res.json(rw)
+    })
+    st.finalize();
+
+  });
+
+  db.close();
+
 });
 
 //export this router to use in our index.js
