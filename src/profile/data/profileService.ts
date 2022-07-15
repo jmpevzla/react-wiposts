@@ -7,28 +7,28 @@ import { PhotoResponse } from "@/api/apiTypes";
 
 export async function getProfileApi(): Promise<ProfileResponse> {
   const res = await axios.get<any, AxiosResponse<ProfileResponse>>
-    (`/users`)
+    (`/users/me`)
 
   return res.data
 }
 
 export async function getProfileByUsernameApi(username: string): Promise<ProfileShowResponse> {
   const res = await axios.get<any, AxiosResponse<ProfileShowResponse>>
-    (`/users/username/${username}`)
+    (`/users/user/${username}`)
 
   return res.data
 }
 
 export async function editProfileApi(profile: ProfileEdit): Promise<ProfileResponse> {
   const res = await axios.put<any, AxiosResponse<ProfileResponse>, ProfileEdit>
-    (`/users/info`, profile)
+    (`/users/me/info`, profile)
 
   return res.data
 }
 
 export async function changePasswordApi(data: ChangePassword): Promise<void> {
   await axios.put<any, AxiosResponse<void>, ChangePassword>
-    (`/users/change-password`, data)
+    (`/users/me/change-password`, data)
 }
 
 export async function uploadPhotoApi(photo: File): Promise<PhotoResponse> {
@@ -36,7 +36,7 @@ export async function uploadPhotoApi(photo: File): Promise<PhotoResponse> {
   formData.append('photo', photo)
 
   const res = await axiosUpload.put<any, AxiosResponse<PhotoResponse>, FormData>
-    (`/users/photo`, formData)
+    (`/users/me/photo`, formData)
 
   return res.data
 }

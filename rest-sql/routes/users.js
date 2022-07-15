@@ -16,7 +16,7 @@ const upload = multer('users')
 //   return ps
 // }
 
-router.get('/', function(req, res){
+router.get('/me', function(req, res){
   //res.send('a User' + req.params.id);
   //const $username = req.params.username
   const db = getDb()
@@ -66,7 +66,7 @@ router.get('/', function(req, res){
 
 });
 
-router.put('/photo', upload.single('photo'), function(req, res) {
+router.put('/me/photo', upload.single('photo'), function(req, res) {
   const db = getDb()
   const $id = 1
   const $updatedAt = new Date().toISOString()
@@ -107,7 +107,7 @@ router.put('/photo', upload.single('photo'), function(req, res) {
   }
 })
 
-router.put('/info', function(req, res){
+router.put('/me/info', function(req, res){
   const db = getDb()
 
   const updatedAt = new Date().toISOString()
@@ -154,7 +154,7 @@ router.put('/info', function(req, res){
   db.close()
 });
 
-router.put('/change-password', function(req, res){
+router.put('/me/change-password', function(req, res){
   const db = getDb()
 
   const $id = 1
@@ -207,7 +207,7 @@ router.put('/change-password', function(req, res){
   })
 });
 
-router.get('/username/:username', function(req, res){
+router.get('/user/:username', function(req, res){
   const db = getDb()
   const $username = req.params.username
 
