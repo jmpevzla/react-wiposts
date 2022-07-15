@@ -6,7 +6,7 @@ import { axiosAuth } from '@/api/getAxios'
 
 export async function doRegisterApi(data: Register): Promise<TAuthResponse> {
   const res = await axiosAuth.post<any, AxiosResponse<TAuthResponse>, Register>
-    (`/register`, data)
+    (`/auth/register`, data)
 
   return res.data
 }

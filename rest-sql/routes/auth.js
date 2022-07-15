@@ -52,6 +52,7 @@ router.post('/register', function(req, res){
 
   const body = {
     ...req.body,
+    name: req.body.username,
     createdAt,
     updatedAt
   }
@@ -63,7 +64,7 @@ router.post('/register', function(req, res){
   })
   const $pvalues = pvalues.join(', ')
 
-  let values = {}
+  let values = { }
   for(let key of keys) {
     values['$' + key] = body[key]
   }
@@ -80,15 +81,35 @@ router.post('/register', function(req, res){
         return res.status(500).end()
       }
 
-      return res.status(201).json({
-        id: this.lastID
+      const keys = [
+        'id', 'name', 'username'
+        , 'email', 'photo'
+      ]
+      
+      const $keys = keys.join(', ')
+      const params = { $id: this.lastID }
+  
+      const st = db.prepare(
+        `SELECT ${$keys} 
+        FROM users 
+        WHERE id = $id`);
+      
+      st.get(params, function (err, row) {
+        if (err) {
+          console.error(err)
+        }
+  
+        const rw = { ...row, photo: getPhoto(folderUsers, row.photo) }
+        return res.status(201).json(rw)
       })
+      st.finalize();
+      db.close()
+
     })
 
     stmt.finalize();
   });
 
-  db.close()
 });
 
 //export this router to use in our index.js
