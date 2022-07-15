@@ -4,7 +4,6 @@ import * as Yup from 'yup'
 import { Link, useNavigate } from 'react-router-dom'
 import { Icon } from "@mdi/react"
 import { mdiAccountEdit, mdiAccountBoxMultiple } from "@mdi/js"
-import large from '@/imgs/large.jpg'
 import { editProfileApi, getProfileApi, uploadPhotoApi } from "../data/profileService"
 import { Profile } from "../types"
 

@@ -115,7 +115,7 @@ router.put('/info', function(req, res){
     ...req.body,
     updatedAt,
   }
-  const $id = 3
+  const $id = 1
 
   const keys = [
     'name', 'phone', 'birthday'

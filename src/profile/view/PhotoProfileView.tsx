@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Icon } from '@mdi/react'
 import { mdiAccountBoxMultiple } from '@mdi/js'
 import { useEffect, useState } from 'react'
-import { getProfileApi, uploadPhotoApi } from '../data/profileService'
+import { getProfileByUsernameApi, uploadPhotoApi } from '../data/profileService'
 
 export default PhotoProfileView
 
@@ -16,7 +16,7 @@ function PhotoProfileView() {
     async function load() {
       try {
         setIsLoading(true)
-        const res = await getProfileApi(1)
+        const res = await getProfileByUsernameApi('joseperez')
         setPhoto(res.info?.photo!)
 
       } catch(err) {
