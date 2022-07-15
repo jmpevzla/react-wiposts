@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Icon } from "@mdi/react"
 import { mdiAccountEdit, mdiAccountBoxMultiple } from "@mdi/js"
 import large from '@/imgs/large.jpg'
-import { editProfileApi, getProfileFullApi, uploadPhotoApi } from "../data/profileService"
+import { editProfileApi, getProfileApi, uploadPhotoApi } from "../data/profileService"
 import { Profile } from "../types"
 
 export default EditProfileView
@@ -40,7 +40,7 @@ function EditProfileView() {
     async function load() {
       try {
         setIsLoading(true)
-        const res = await getProfileFullApi()
+        const res = await getProfileApi()
         setProfile(res.info!)
 
       } catch(err) {

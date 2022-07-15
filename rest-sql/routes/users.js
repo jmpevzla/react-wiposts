@@ -153,5 +153,58 @@ router.put('/info', function(req, res){
   db.close()
 });
 
+router.put('/change-password', function(req, res){
+  const db = getDb()
+
+  const $id = 1
+  const $updatedAt = new Date().toISOString()
+
+  db.serialize(() => {
+    const st = db.prepare(
+      `SELECT id 
+      FROM users 
+      WHERE id = $id and password = $password`)
+    
+    let params = {
+      $id,
+      $password: req.body.oldPassword
+    }
+
+    st.get(params, function(err, row) {
+      if (err) {
+        console.error(err)
+        return res.status(500).end()
+      }
+
+      if (!row) {
+        return res.status(400).end()
+      }
+
+      params = {
+        $id,
+        $password: req.body.newPassword,
+        $updatedAt
+      }
+
+      const stmt = db.prepare(
+        `UPDATE users 
+        SET password = $password, updatedAt = $updatedAt 
+        WHERE id = $id`);
+      
+      stmt.run(params, function (err) {
+        if (err) {
+          console.error(err)
+          return res.status(500).end()
+        }
+
+        return res.status(200).end()
+      })
+      stmt.finalize()
+      db.close()
+    })
+    st.finalize()
+  })
+});
+
 //export this router to use in our index.js
 module.exports = router;

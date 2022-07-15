@@ -5,19 +5,19 @@ import type { ChangePassword, ProfileEdit, ProfileResponse
 import { axios, axiosUpload } from '@/api/getAxios'
 import { PhotoResponse } from "@/api/apiTypes";
 
-export async function getProfileFullApi(): Promise<ProfileResponse> {
+export async function getProfileApi(): Promise<ProfileResponse> {
   const res = await axios.get<any, AxiosResponse<ProfileResponse>>
-    (`/users/1`)
+    (`/users`)
 
   return res.data
 }
 
-export async function getProfileApi(id: number): Promise<ProfileShowResponse> {
-  const res = await axios.get<any, AxiosResponse<ProfileShowResponse>>
-    (`/users/${id}`)
+// export async function getProfileByUsernameApi(username: string): Promise<ProfileShowResponse> {
+//   const res = await axios.get<any, AxiosResponse<ProfileShowResponse>>
+//     (`/users/${id}`)
 
-  return res.data
-}
+//   return res.data
+// }
 
 export async function editProfileApi(profile: ProfileEdit): Promise<ProfileResponse> {
   const res = await axios.put<any, AxiosResponse<ProfileResponse>, ProfileEdit>
@@ -28,7 +28,7 @@ export async function editProfileApi(profile: ProfileEdit): Promise<ProfileRespo
 
 export async function changePasswordApi(data: ChangePassword): Promise<void> {
   await axios.put<any, AxiosResponse<void>, ChangePassword>
-    (`/profile/change-password`, data)
+    (`/users/change-password`, data)
 }
 
 export async function uploadPhotoApi(photo: File): Promise<PhotoResponse> {
