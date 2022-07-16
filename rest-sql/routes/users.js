@@ -3,6 +3,7 @@ const fs = require('fs')
 const { getDb } = require('../db')
 const multer = require('../multer')
 const { folderUsers, getPhoto } = require('../utils')
+const { getMe, updatePhoto, updateInfo, checkWithPassword, updatePassword, getByUsername } = require('../models/users')
 
 const router = express.Router();
 const upload = multer('users')
@@ -17,233 +18,139 @@ const upload = multer('users')
 // }
 
 router.get('/me', function(req, res){
-  //res.send('a User' + req.params.id);
-  //const $username = req.params.username
   const db = getDb()
   const $id = 1
 
-  db.serialize(() => {
-    // db.run("CREATE TABLE lorem (info TEXT)");
+  db.serialize(async () => {
+    try {
+      const result = await getMe({ $id }, db)
+      return res.json(result)
+    } catch(err) {
+      console.error(err)
 
-    // const stmt = db.prepare("INSERT INTO lorem VALUES (?)");
-    // for (let i = 0; i < 10; i++) {
-    //     stmt.run("Ipsum " + i);
-    // }
-    // stmt.finalize();
-
-    // db.each("SELECT rowid AS id, info FROM lorem", (err, row) => {
-    //     console.log(row.id + ": " + row.info);
-    // });
-    //const params = getBindParams({ params: req.params })
-    const keys = [
-      'name', 'phone', 'birthday', 'gender'
-      , 'description', 'website', 'username'
-      , 'email', 'photo', 'numPosts'
-    ]
-    
-    const $keys = keys.join(', ')
-    const params = { $id }
-
-    const st = db.prepare(`SELECT ${$keys} FROM users WHERE id = $id`);
-    st.get(params, function (err, row) {
-      if (err) {
-        console.error(err)
-        return res.status(500).end()
+      if (err.st && err.msg) {
+        return res.status(err.st).json({ error: err.msg })
       }
 
-      if(!row) {
-        return res.status(400).end()
-      }
-
-      const rw = { ...row, photo: getPhoto(folderUsers, row.photo) }
-      return res.json(rw)
-    })
-    st.finalize();
+      return res.status(500).end()
+    } finally {
+      db.close()
+    }
 
   });
-
-  db.close();
 
 });
 
 router.put('/me/photo', upload.single('photo'), function(req, res) {
   const db = getDb()
   const $id = 1
-  const $updatedAt = new Date().toISOString()
-  // if (isNaN(id) || id < 1) {
-  //   return res.status(400).json({ error: 'id is invalid' })
-  // }
-
-  //const photo = (req.file?.path || '').replace('public/', '')
+  
   const file = req.file
   if (file) {
     //console.log(file.filename)
     const $photo = file.filename
 
-    db.serialize(() => {
-      const stmt = db.prepare(
-        `UPDATE users 
-        SET photo = $photo, updatedAt = $updatedAt 
-        WHERE id = $id`)
-      
-      const values = {
-        $id, $photo, $updatedAt
-      }
-      stmt.run(values, function (err) {
-        if (err) {
-          console.error(err)
-          fs.unlinkSync(req.file.path)
-          return res.status(500).end()
+    db.serialize(async () => {
+      try {
+        const result = await updatePhoto({ $id, $photo }, db)
+        return res.json(result)
+      } catch(err) {
+        console.error(err)
+        fs.unlinkSync(req.file.path)
+
+        if (err.st && err.msg) {
+          return res.status(err.st).json({ error: err.msg })
         }
-        
-        const resp = { id: $id, photo: getPhoto(folderUsers, $photo) }
-        return res.json(resp)
-      })
-      stmt.finalize()
+  
+        return res.status(500).end()
+      } finally {
+        db.close()
+      }
+
     })
-    db.close()
   } else {
-    return res.status(400).json({ error: 'The file can not be processed, please verify the file and try again.' })
+    return res
+      .status(400)
+      .json({ error: 'The file can not be processed, please verify the file and try again.' })
   }
 })
 
 router.put('/me/info', function(req, res){
   const db = getDb()
 
-  const updatedAt = new Date().toISOString()
-  const body = {
-    ...req.body,
-    updatedAt,
-  }
   const $id = 1
 
-  const keys = [
-    'name', 'phone', 'birthday'
-    , 'gender', 'description', 'website'
-    , 'updatedAt'
-  ]
-
-  const pkeys = keys.map((value) => {
-    return `${value} = $${value}`
-  })
-  const $pkeys = pkeys.join(', ')
-  
-  const values = { $id }
-  for(let key of keys) {
-    values['$' + key] = body[key]
-  }
-
-  // console.log($keys)
-  // console.log($pvalues)
-  // console.log(values)
-
-  db.serialize(() => {
-    const stmt = db.prepare(`UPDATE users SET ${$pkeys} WHERE id = $id`);
-    stmt.run(values, function (err) {
-      if (err) {
-        console.error(err)
-        return res.status(500).end()
+  db.serialize(async () => {
+   
+    try {
+      await updateInfo({ $id, data: req.body }, db)
+      return res.end()
+    } catch(err) {
+      console.error(err)
+        
+      if (err.st && err.msg) {
+        return res.status(err.st).json({ error: err.msg })
       }
 
-      return res.status(200).end()
-    })
+      return res.status(500).end()
+    } finally {
+      db.close()
+    }
 
-    stmt.finalize();
   });
 
-  db.close()
 });
 
 router.put('/me/change-password', function(req, res){
   const db = getDb()
 
   const $id = 1
-  const $updatedAt = new Date().toISOString()
 
-  db.serialize(() => {
-    const st = db.prepare(
-      `SELECT id 
-      FROM users 
-      WHERE id = $id and password = $password`)
-    
-    let params = {
-      $id,
-      $password: req.body.oldPassword
+  db.serialize(async () => {
+
+    try {
+      await checkWithPassword({ $id, $password: req.body.oldPassword }, db)
+      await updatePassword({ $id, $password: req.body.newPassword }, db)
+
+      return res.end()
+    } catch(err) {
+      console.error(err)
+        
+      if (err.st && err.msg) {
+        return res.status(err.st).json({ error: err.msg })
+      }
+
+      return res.status(500).end()
+    } finally {
+      db.close()
     }
 
-    st.get(params, function(err, row) {
-      if (err) {
-        console.error(err)
-        return res.status(500).end()
-      }
-
-      if (!row) {
-        return res.status(400).end()
-      }
-
-      params = {
-        $id,
-        $password: req.body.newPassword,
-        $updatedAt
-      }
-
-      const stmt = db.prepare(
-        `UPDATE users 
-        SET password = $password, updatedAt = $updatedAt 
-        WHERE id = $id`);
-      
-      stmt.run(params, function (err) {
-        if (err) {
-          console.error(err)
-          return res.status(500).end()
-        }
-
-        return res.status(200).end()
-      })
-      stmt.finalize()
-      db.close()
-    })
-    st.finalize()
   })
+  
 });
 
 router.get('/user/:username', function(req, res){
   const db = getDb()
   const $username = req.params.username
 
-  db.serialize(() => {
-    const keys = [
-      'name', 'description', 'website'
-      , 'username', 'photo', 'numPosts'
-    ]
-    
-    const $keys = keys.join(', ')
-    const params = { $username }
-
-    const st = db.prepare(
-      `SELECT ${$keys} 
-      FROM users 
-      WHERE username = $username`
-    );
-
-    st.get(params, function (err, row) {
-      if (err) {
-        console.error(err)
-        return res.status(500).end()
+  db.serialize(async () => {
+    try {
+      const result = await getByUsername({ $username }, db)
+     
+      return res.json(result)
+    } catch(err) {
+      console.error(err)
+        
+      if (err.st && err.msg) {
+        return res.status(err.st).json({ error: err.msg })
       }
 
-      if(!row) {
-        return res.status(400).end()
-      }
-
-      const rw = { ...row, photo: getPhoto(folderUsers, row.photo) }
-      return res.json(rw)
-    })
-    st.finalize();
+      return res.status(500).end()
+    } finally {
+      db.close()
+    }
 
   });
-
-  db.close();
 
 });
 
