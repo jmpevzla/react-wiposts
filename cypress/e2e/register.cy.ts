@@ -7,10 +7,11 @@ import { fullRoute
 import routes from '../fixtures/routes.js'
 import { username, email, password
   , confPassword, confPasswordError } from '../fixtures/register.json'
+import { resetDatabase } from '../support/utils'
 
 describe('Register Page', () => {
   before(() => {
-    cy.resetDB()
+    resetDatabase()
   })
 
   beforeEach(() => {

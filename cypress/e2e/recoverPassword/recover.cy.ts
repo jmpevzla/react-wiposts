@@ -4,10 +4,11 @@
 import { fullRoute } from '../../support/functions'
 import routes from '../../fixtures/routes.js'
 import { email, emailError } from '../../fixtures/recoverPassword/recover.json'
+import { resetDatabase } from '../../support/utils'
 
 describe('Recover Password Page', () => {
-  beforeEach(() => {
-    cy.resetDB()
+  before(() => {
+    resetDatabase()
   })
   
   beforeEach(() => {

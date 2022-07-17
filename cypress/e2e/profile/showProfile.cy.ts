@@ -3,12 +3,12 @@
 
 import routes from '../../fixtures/routes.js'
 import { fullRoute } from '../../support/functions'
-import { resetUploadFolder } from '../../support/utils'
+import { resetUploadFolder, resetDatabase } from '../../support/utils'
 
 describe('Profile: Show Profile', () => {
 
   before(() => {
-    cy.resetDB()
+    resetDatabase()
     resetUploadFolder()
   })
   

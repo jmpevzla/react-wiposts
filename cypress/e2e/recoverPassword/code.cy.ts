@@ -5,10 +5,11 @@ import { fullRoute } from '../../support/functions'
 import routes from '../../fixtures/routes.js'
 import { code, codeError
   ,codegt, codelt } from '../../fixtures/recoverPassword/code.json'
+import { resetDatabase } from '../../support/utils'
 
 describe('Recover Password Code Page', () => {
-  beforeEach(() => {
-    cy.resetDB()
+  before(() => {
+    resetDatabase()
   })
   
   beforeEach(() => {

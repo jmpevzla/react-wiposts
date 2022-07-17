@@ -39,9 +39,9 @@ import 'cypress-wait-until';
 //   }
 // }
 
-Cypress.Commands.add('resetDB', () => {
-  cy.readFile('rest-server/db.tests.json').then((text) => {
-    cy.writeFile('rest-server/db.json', text).end()
-  })
-})
+// Cypress.Commands.add('resetDB', () => {
+//   cy.readFile('rest-server/db.tests.json').then((text) => {
+//     cy.writeFile('rest-server/db.json', text).end()
+//   })
+// })
 

@@ -8,11 +8,12 @@ import { fullRoute
 import { oldPassword, password
   ,oldPasswordError
   ,confPassword, confPasswordError } from '../../fixtures/profile/changePassword.json'
+import { resetDatabase } from '../../support/utils'
 
 describe('Profile: Change Password', () => {
 
   before(() => {
-    cy.resetDB()
+    resetDatabase()    
   })
   
   beforeEach(() => {

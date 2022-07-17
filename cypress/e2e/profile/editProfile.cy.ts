@@ -3,7 +3,7 @@
 
 import routes from '../../fixtures/routes.js'
 import { fullRoute } from '../../support/functions'
-import { resetUploadFolder } from '../../support/utils'
+import { resetUploadFolder, resetDatabase } from '../../support/utils'
 import { 
   fullName, description,
   gender, birthday,
@@ -14,7 +14,7 @@ import {
 describe('Profile: Edit Profile', () => {
 
   before(() => {
-    cy.resetDB()
+    resetDatabase()
     resetUploadFolder()
   })
   

@@ -7,11 +7,12 @@ import { fullRoute
   ,showConfPassword, hideConfPassword } from '../../support/functions'
 import { password
   ,confPassword, confPasswordError } from '../../fixtures/recoverPassword/change.json'
+import { resetDatabase } from '../../support/utils'
 
 describe('Recover Password Change Page', () => {
 
   before(() => {
-    cy.resetDB()
+    resetDatabase()
   })
   
   beforeEach(() => {

@@ -6,10 +6,11 @@ import { fullRoute, showPassword
 import routes from '../fixtures/routes.js'
 import { email, password
   , passwordError } from '../fixtures/login.json'
+import { resetDatabase } from '../support/utils'
 
 describe('Login Page', () => {
-  beforeEach(() => {
-    cy.resetDB()
+  before(() => {
+    resetDatabase()
   })
   
   beforeEach(() => {
