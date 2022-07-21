@@ -11,8 +11,8 @@ import RecPasswordView from "@/recoverPassword/view/RecPasswordView";
 import RecPasswordCodeView from "@/recoverPassword/view/RecPasswordCodeView";
 import RecPasswordChangeView from '@/recoverPassword/view/RecPasswordChangeView';
 import ShowPostView from "@/post/view/ShowPostView";
-import CreatePostView from "@/post/view/CreatePostView";
-import CreatePostDescView from "@/post/view/CreatePostDescView";
+import CreatePostPhotoView from "@/post/view/CreatePostPhotoView";
+import CreatePostInfoView from "@/post/view/CreatePostInfoView";
 import PhotoPostView from "@/post/view/PhotoPostView";
 import EditPostView from "@/post/view/EditPostView";
 import PhotoProfileView from "@/profile/view/PhotoProfileView";
@@ -57,8 +57,8 @@ function AppView() {
             <Route path="post/:id">
               <Route index element={<ShowPostView />} />
               <Route path="create">
-                <Route index element={<CreatePostView />} />
-                <Route path="description" element={<CreatePostDescView />} />
+                <Route path="photo" element={<CreatePostPhotoView />} />
+                <Route path="info" element={<CreatePostInfoView />} />
               </Route>
               <Route path="edit" element={<EditPostView />} />
               <Route path="photo" element={<PhotoPostView />} />

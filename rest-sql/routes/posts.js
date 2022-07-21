@@ -7,7 +7,7 @@ const { folderPosts, getPhoto, folderUsers } = require('../utils')
 const router = express.Router();
 const upload = multer('posts');
 
-router.get('/:id', function(req, res){
+router.get('show/:id', function(req, res){
   const db = getDb()
   const $id = req.params.id
 
@@ -63,46 +63,129 @@ router.get('/:id', function(req, res){
 
 });
 
-router.post('/', function(req, res){
+router.get('/check-draft', function(req, res) {
+  const db = getDb()
+
+  const $userId = 1
+  const $status = 'COMPLETED'
+
+  db.serialize(() => {
+    const keys = [
+      'id', 'photo', 'status'
+    ]
+
+    const st = db.prepare(`
+      SELECT ${keys} 
+      FROM posts 
+      WHERE userId = $userId and 
+      status <> $status`);
+    
+    const params = { $userId, $status }  
+    st.get(params, function (err, row) {
+      if (err) {
+        console.error(err)
+      }
+
+      if (!row) {
+        return res.json(null)
+      }
+
+      if (row.photo) {
+        row.photo = getPhoto(folderPosts, row.photo)
+      }
+
+      return res.json(row)
+    })
+    st.finalize();
+
+  });
+
+  db.close();
+
+})
+
+router.post('/create', function(req, res){
   const db = getDb()
  
   const $userId = 1
-  const $status = 'CREATED'
-  const $createdAt = new Date().toISOString()
-  const $updatedAt = $createdAt 
 
-  const keys = ['userId', 'status', 'createdAt', 'updatedAt']
-  const $keys = keys.join(', ')
-  const pvalues = keys.map((value) => {
-    return '$' + value
+  const check = () => new Promise((res, rej) => {
+    const $status = 'COMPLETED'
+    const limitDrafts = 0
+    
+    const keys = [
+      'count(id) as cnt'
+    ]
+
+    const st = db.prepare(`
+      SELECT ${keys} 
+      FROM posts 
+      WHERE userId = $userId and 
+      status <> $status`);
+    
+    const params = { $userId, $status }  
+    st.get(params, function (err, row) {
+      if (err) {
+        console.error(err)
+      }
+
+      console.log('count: ', row.cnt)
+      if (row.cnt > limitDrafts) {
+        return rej({ st: 400 })
+      }
+
+      return res()
+    })
+    st.finalize();
   })
-  const $pvalues = pvalues.join(', ')
-  const values = { $userId, $status, $createdAt, $updatedAt }
 
-  // console.log($keys)
-  // console.log($pvalues)
-  // console.log(values)
+  const insert = () => new Promise((res, rej) => {
+    const $status = 'CREATED'
+    const $createdAt = new Date().toISOString()
+    const $updatedAt = $createdAt 
 
-  db.serialize(() => {
+    const keys = ['userId', 'status', 'createdAt', 'updatedAt']
+    const $keys = keys.join(', ')
+    const pvalues = keys.map((value) => {
+      return '$' + value
+    })
+    const $pvalues = pvalues.join(', ')
+    const values = { $userId, $status, $createdAt, $updatedAt }
+
     const stmt = db.prepare(`INSERT INTO posts (${$keys}) VALUES (${$pvalues})`);
     stmt.run(values, function (err) {
       if (err) {
         console.error(err)
-        return res.status(500).end()
+        return rej()
       }
 
-      return res.status(201).json({
-        id: this.lastID
-      })
+      return res({ id: this.lastID })
     })
 
     stmt.finalize();
-  });
+  })
 
-  db.close()
+  db.serialize(async () => {
+    try {
+      await check()
+      const result = await insert()
+
+      return res.status(201).json(result)
+    } catch(err) {
+      console.error(err)
+      
+      if(err.st) {
+        return res.status(err.st).end()
+      }
+      
+      return res.status(500).end()
+    } finally {
+      db.close()
+    }
+  });
 });
 
-router.put('/:id/photo', upload.single('photo'), function(req, res) {
+router.put('/create/:id/photo', upload.single('photo'), function(req, res) {
   const db = getDb()
   const $id = req.params.id
   const $userId = 1
@@ -175,7 +258,7 @@ router.put('/:id/photo', upload.single('photo'), function(req, res) {
   }
 })
 
-router.put('/:id/info', function(req, res){
+router.put('/create/:id/info', function(req, res){
   const db = getDbTrans()
 
   const $id = req.params.id
@@ -294,7 +377,7 @@ router.put('/:id/info', function(req, res){
   })
 });
 
-router.put('/:id/edit', function(req, res){
+router.put('/edit/:id', function(req, res){
   const db = getDbTrans()
 
   const $id = req.params.id
@@ -366,7 +449,7 @@ router.put('/:id/edit', function(req, res){
   })
 });
 
-router.delete('/:id', function(req, res){
+router.delete('/remove/:id', function(req, res){
   const db = getDbTrans()
 
   const $id = req.params.id
@@ -377,6 +460,27 @@ router.delete('/:id', function(req, res){
 
   db.beginTransaction(async function(err, trans) {
     
+    const queryPhoto = trans.prepare( 
+      `SELECT photo
+      FROM posts
+      WHERE id = $id and userId = $userId`
+    )
+   
+    const queryPhotoParams = {
+      $id,
+      $userId,
+    }
+
+    const queryPhotoProm = () => new Promise((res, rej) => {
+      queryPhoto.get(queryPhotoParams, function(err, row) {
+        if (err) {
+          return rej(err)
+        }
+        res(row ? row.photo : null)
+      })
+      queryPhoto.finalize()
+    })
+
     const stmt = trans.prepare(
       `DELETE FROM posts 
       WHERE id = $id and userId = $userId`);
@@ -439,6 +543,7 @@ router.delete('/:id', function(req, res){
     })
     
     try {
+      const photo = await queryPhotoProm()
       await stmtProm()
       const data = await queryProm()
       await stmt2Prom(data.numPosts) 
@@ -447,6 +552,11 @@ router.delete('/:id', function(req, res){
         if (err) {
           return console.error(err)
         }
+
+        if(photo) {
+          fs.unlinkSync(process.cwd() + '/' + getPhoto(folderPosts, photo))
+        }
+
         _db.close();
         return res.status(200).end()
       });
