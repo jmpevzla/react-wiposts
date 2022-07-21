@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { Icon } from '@mdi/react'
 import { mdiImagePlus } from '@mdi/js'
@@ -13,6 +13,11 @@ function CreatePostPhotoView() {
   const [error, setError] = useState('')
   const [photo, setPhoto] = useState('')
   const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [showCapture, setShowCapture] = useState<boolean>(false)
+
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+
   const navigate = useNavigate()
   const params = useParams()
   let id = Number(params.id)
@@ -154,6 +159,57 @@ function CreatePostPhotoView() {
     }
   }
 
+  const onTakePhoto = async () => {
+    const constraints = {
+      video: {
+        width: 800, height: 600
+      }
+    };
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setShowCapture(true) 
+      setTimeout(() => {
+        videoRef.current!.srcObject = stream;
+      }, 0)
+    } catch (e: any) {
+      console.error(`navigator.getUserMedia error:${e.toString()}`);
+    }
+  }
+
+  const onCapture = () => {
+    const canvas = canvasRef.current!
+    const video = videoRef.current!
+    
+    var context = canvas.getContext('2d')!;
+    context.drawImage(video, 0, 0, 640, 480);
+  }
+
+  const onOkCapture = () => {
+    const canvas = canvasRef.current!
+    const video = videoRef.current!
+    const stream = video.srcObject as MediaStream
+
+    var context = canvas.getContext('2d')!;
+    canvas.toBlob((blob) => {
+      const photoFile = new File([blob!], "camera.jpg", { type: "image/jpeg" })
+      
+      if(photo) {
+        URL.revokeObjectURL(photo)
+      }
+      
+      const objURL = URL.createObjectURL(photoFile)
+      setPhoto(objURL)
+      setPhotoFile(photoFile)
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      video.pause()
+      video.srcObject = null
+      stream.getTracks()[0].stop()
+      setShowCapture(false)
+    }, 'image/jpeg', 0.95)
+  }
+
   return (
     <section>
       <h2>Create a New Post!</h2>
@@ -162,9 +218,23 @@ function CreatePostPhotoView() {
         <h3>Photo</h3>
 
         <img className="w-60" src={photo} />
+        {showCapture && (
+          <div>
+            <div className="video-wrap">
+              <video ref={videoRef} playsInline autoPlay></video>
+            </div>
+
+            <div className="controller">
+              <button className="btn" onClick={onCapture}>Capture</button> | 
+              <button className="btn" onClick={onOkCapture}>Ok</button>
+            </div>
+
+            <canvas ref={canvasRef} width="640" height="480"></canvas> 
+          </div>
+        )}
 
         <div className="mt-3">
-          <button className="btn btn-primary">Take a Photo</button> | 
+          <button className="btn btn-primary" onClick={onTakePhoto}>Take a Photo</button> | 
           <input id="inputPhoto" type="file" 
               className="form-control-file hidden" 
               data-test="input-photo"
