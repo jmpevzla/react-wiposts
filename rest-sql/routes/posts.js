@@ -377,6 +377,51 @@ router.put('/create/:id/info', function(req, res){
   })
 });
 
+router.get('/data/:id', function(req, res){
+  const db = getDb()
+  const $id = req.params.id
+  const $userId = 1
+  const $status = 'COMPLETED'
+
+  db.serialize(() => {
+    
+    const keys = [
+      'id', 'photo', 'photoDatetime'
+      , 'description', 'hashtags', 'status'
+    ]
+    
+    const $keys = keys.join(', ')
+    const params = { $id, $userId, $status }
+
+    const st = db.prepare(`
+      SELECT ${$keys} 
+      FROM posts 
+      WHERE id = $id and 
+      userId = $userId and
+      status = $status
+    `);
+    
+    st.get(params, function (err, row) {
+      if (err) {
+        console.error(err)
+      }
+
+      if(!row) {
+        return res.status(400).end()
+      }
+
+      row.photo = getPhoto(folderPosts, row.photo)
+
+      return res.json(row)
+    })
+    st.finalize();
+
+  });
+
+  db.close();
+
+});
+
 router.put('/edit/:id', function(req, res){
   const db = getDbTrans()
 

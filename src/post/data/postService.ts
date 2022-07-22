@@ -1,13 +1,13 @@
 import type { AxiosResponse } from "axios";
 import type { PostCheckedDraftResponse
-  , PostCreatedResponse, PostInfo } from "../types";
+  , PostCreatedResponse, PostInfo, PostResponse } from "../types";
 
 import { axios, axiosUpload } from '@/api/getAxios'
 import { PhotoResponse } from "@/api/apiTypes";
 
-export async function checkDraftPostApi(id?: number): Promise<PostCheckedDraftResponse> {
+export async function checkDraftPostApi(): Promise<PostCheckedDraftResponse> {
   const res = await axios.get<any, AxiosResponse<PostCheckedDraftResponse>>
-    (`/posts/check-draft`, { params: { id }})
+    (`/posts/check-draft`)
 
   return res.data
 }
@@ -39,6 +39,20 @@ export async function createPostInfoApi(id: number, data: PostInfo): Promise<voi
 export async function deletePostApi(id: number): Promise<void> {
   const res = await axios.delete<any, AxiosResponse<void>>
     (`/posts/remove/${id}`)
+
+  return res.data
+}
+
+export async function postDataApi(id: number): Promise<PostResponse> {
+  const res = await axios.get<any, AxiosResponse<PostResponse>>
+    (`/posts/data/${id}`)
+
+  return res.data
+}
+
+export async function editPostApi(id: number, data: PostInfo): Promise<void> {
+  const res = await axios.put<any, AxiosResponse<void>>
+    (`/posts/edit/${id}`, data)
 
   return res.data
 }
