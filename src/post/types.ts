@@ -9,7 +9,6 @@ export interface PostCheckedDraft {
 export interface PostCreated {
   id: number;
 }
-
 export interface Post {
   id: number;
   photo: string;
@@ -19,39 +18,27 @@ export interface Post {
   status: string;
 }
 
+export interface PostPhoto {
+  photo: string;
+}
+
+export interface PostUserShow {
+  id: number;
+  name: string;
+  photo: string;
+  username: string;
+}
+export interface PostShow extends Post {
+  user: PostUserShow;
+  createdAt: string;
+}
+
 export type PostInfo = Omit<Post, "id" | "photo" | "status">
 
 export type PostCheckedDraftResponse = TResponse<PostCheckedDraft>
 export type PostCreatedResponse = TResponse<PostCreated>
 export type PostResponse = TResponse<Post>
+export type PostPhotoResponse = TResponse<PostPhoto>
+export type PostShowResponse = TResponse<PostShow>
 
-// export interface Profile {
-//   username: string,
-//   email: string,
-//   name: string,
-//   phone: string,
-//   birthday: string,
-//   gender: string,
-//   description: string,
-//   website: string,
-//   photo: string
-// }
-
-// export interface ProfileShow {
-//   username: string,
-//   name: string,
-//   numPosts: number,
-//   description: string,
-//   website: string,
-//   photo: string
-// }
-
-// export interface ChangePassword {
-//   oldPassword: string,
-//   newPassword: string,
-//   confNewPassword: string
-// }
-
-// export type ProfileResponse = TResponse<Profile>
 // export type ProfileEdit = Omit<Profile, 'username' | 'email' | 'photo'>
-//export type ProfileShowResponse = TResponse<ProfileShow>

@@ -7,7 +7,7 @@ const { folderPosts, getPhoto, folderUsers } = require('../utils')
 const router = express.Router();
 const upload = multer('posts');
 
-router.get('show/:id', function(req, res){
+router.get('/show/:id', function(req, res){
   const db = getDb()
   const $id = req.params.id
 
@@ -15,7 +15,8 @@ router.get('show/:id', function(req, res){
     
     const keys = [
       'posts.id', 'posts.photo', 'photoDatetime'
-      , 'posts.description', 'hashtags', 'status'
+      , 'posts.description', 'hashtags', 'status', 'posts.createdAt'
+      , 'users.id as user_id'
       , 'users.name as user_name, users.photo as user_photo'
       , 'users.username as user_username'
     ]
@@ -54,6 +55,48 @@ router.get('show/:id', function(req, res){
       rel.user.photo = getPhoto(folderUsers, rel.user.photo)
 
       return res.json(rel)
+    })
+    st.finalize();
+
+  });
+
+  db.close();
+
+});
+
+
+router.get('/photo/:id', function(req, res){
+  const db = getDb()
+  const $id = req.params.id
+  const $status = 'COMPLETED'
+
+  db.serialize(() => {
+    
+    const keys = [
+      'photo', 
+    ]
+    
+    const $keys = keys.join(', ')
+    const params = { $id, $status }
+
+    const st = db.prepare(`
+      SELECT ${$keys} 
+      FROM posts  
+      WHERE posts.id = $id and
+      status = $status`);
+    
+    st.get(params, function (err, row) {
+      if (err) {
+        console.error(err)
+      }
+
+      if(!row) {
+        return res.status(400).end()
+      }
+
+      row.photo = getPhoto(folderPosts, row.photo)
+
+      return res.json(row)
     })
     st.finalize();
 
