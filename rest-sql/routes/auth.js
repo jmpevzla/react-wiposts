@@ -14,8 +14,9 @@ router.post('/login', function(req, res){
   db.serialize(() => {
     
     const keys = [
-      'id', 'name', 'username'
-      , 'email', 'photo'
+      'users.id', 'name', 'username'
+      , 'email', 'photo', 'statusEmail',
+      'users_config.theme as config_theme'
     ]
     
     const $keys = keys.join(', ')
@@ -23,7 +24,8 @@ router.post('/login', function(req, res){
 
     const st = db.prepare(
       `SELECT ${$keys} 
-      FROM users 
+      FROM users
+      INNER JOIN users_config on (userId = users.id) 
       WHERE email = $email and password = $password`);
     
     st.get(params, function (err, row) {
@@ -35,7 +37,20 @@ router.post('/login', function(req, res){
         return res.status(401).end()
       }
 
-      const rw = { ...row, photo: getPhoto(folderUsers, row.photo) }
+      const ksrow = Object.keys(row)
+      const rel = {}
+      for(let key of ksrow) {
+        if (key.includes('_')) {
+          const tp = key.split('_')
+          const val = rel[tp[0]] 
+          rel[tp[0]] = val ? val : {}
+          rel[tp[0]][tp[1]] = row[key]
+          continue
+        }
+        rel[key] = row[key]
+      }
+
+      const rw = { ...rel, photo: getPhoto(folderUsers, row.photo) }
       return res.json(rw)
     })
     st.finalize();
@@ -46,71 +61,135 @@ router.post('/login', function(req, res){
 });
 
 router.post('/register', function(req, res){
-  const db = getDb()
-
+  const db = getDbTrans()
+ 
   const createdAt = new Date().toISOString()
   const updatedAt = createdAt
 
   const body = {
     ...req.body,
     name: req.body.username,
+    temporalEmail: req.body.email,
     createdAt,
     updatedAt
   }
-  
-  const keys = ['name', 'username', 'email', 'password', 'createdAt', 'updatedAt']
-  const $keys = keys.join(', ')
-  const pvalues = keys.map((value) => {
-    return '$' + value
-  })
-  const $pvalues = pvalues.join(', ')
 
-  let values = { }
-  for(let key of keys) {
-    values['$' + key] = body[key]
-  }
+  const _db = db.db
 
-  // console.log($keys)
-  // console.log($pvalues)
-  // console.log(values)
+  db.beginTransaction(async function(err, trans) {
+    
+    const createUser = () => new Promise((res, rej) => {
+      const keys = ['name', 'username', 'email', 
+        'password', 'temporalEmail', 'createdAt', 'updatedAt']
+      const $keys = keys.join(', ')
+      const pvalues = keys.map((value) => {
+        return '$' + value
+      })
+      const $pvalues = pvalues.join(', ')
 
-  db.serialize(() => {
-    const stmt = db.prepare(`INSERT INTO users (${$keys}) VALUES (${$pvalues})`);
-    stmt.run(values, function (err) {
-      if (err) {
-        console.error(err)
-        return res.status(500).end()
+      let values = { }
+      for(let key of keys) {
+        values['$' + key] = body[key]
       }
 
+      const stmt = trans.prepare(`INSERT INTO users (${$keys}) VALUES (${$pvalues})`);
+      stmt.run(values, function (err) {
+        if (err) {
+          return rej(err)
+        }
+
+        return res(this.lastID)
+      });
+      stmt.finalize();
+    })
+
+    const createUserConfig = (userId) => new Promise((res, rej) => {
+      const keys = ['userId', 'theme', 'createdAt', 'updatedAt']
+      const $keys = keys.join(', ')
+      const pvalues = keys.map((value) => {
+        return '$' + value
+      })
+      const $pvalues = pvalues.join(', ')
+
+      const data = { userId, theme: '', createdAt, updatedAt }
+      let values = { }
+      for(let key of keys) {
+        values['$' + key] = data[key]
+      }
+
+      const stmt = trans.prepare(`INSERT INTO users_config (${$keys}) VALUES (${$pvalues})`);
+      stmt.run(values, function (err) {
+        if (err) {
+          return rej(err)
+        }
+
+        return res()
+      });
+      stmt.finalize();
+    })
+
+    const getUser = ($id) => new Promise((res, rej) => {
       const keys = [
         'id', 'name', 'username'
-        , 'email', 'photo'
+        , 'email', 'photo', 'statusEmail',
+        '"" as uc_theme'
       ]
-      
+              
       const $keys = keys.join(', ')
-      const params = { $id: this.lastID }
-  
-      const st = db.prepare(
+      const params = { $id }
+
+      const st = trans.prepare(
         `SELECT ${$keys} 
         FROM users 
         WHERE id = $id`);
       
       st.get(params, function (err, row) {
         if (err) {
-          console.error(err)
+          return rej(err)
         }
   
-        const rw = { ...row, photo: getPhoto(folderUsers, row.photo) }
-        return res.status(201).json(rw)
+        const ksrow = Object.keys(row)
+        const rel = {}
+        for(let key of ksrow) {
+          if (key.includes('_')) {
+            const tp = key.split('_')
+            const val = rel[tp[0]] 
+            rel[tp[0]] = val ? val : {}
+            rel[tp[0]][tp[1]] = row[key]
+            continue
+          }
+          rel[key] = row[key]
+        }
+
+        const rw = { ...rel, photo: getPhoto(folderUsers, row.photo) }
+
+        return res(rw)
       })
       st.finalize();
-      db.close()
+    }) 
 
-    })
+    try {
+      const userId = await createUser()
+      await createUserConfig(userId)
+      const user = await getUser(userId)
+      
+      trans.commit(function (err) {
+        if (err) {
+          return console.error(err)
+        }
+        _db.close();
+        return res.status(200).json(user)
+      });
 
-    stmt.finalize();
-  });
-
+    } catch(err) {
+      console.error(err)
+      trans.rollback(function (err) {
+        if (err) console.error(err)
+      });
+      _db.close();
+      return res.status(500).end()
+    }
+  })
 });
 
 router.post('/recover/send-code', function(req, res) {

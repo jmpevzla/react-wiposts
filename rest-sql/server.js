@@ -12,6 +12,7 @@ app.use('/public', express.static('public'))
 
 // routes
 const users = require('./routes/users')
+const usersConfig = require('./routes/usersConfig')
 const auth = require('./routes/auth')
 const posts = require('./routes/posts')
 //
@@ -23,6 +24,7 @@ app.get('/', function(req, res){
 app.use('/users', users)
 app.use('/auth', auth)
 app.use('/posts', posts)
+app.use('/users-config', usersConfig)
 
 app.use(function(req, res, next) {
   res.status(404).send("Sorry, that route doesn't exist. Have a nice day :)");

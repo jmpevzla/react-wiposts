@@ -1,5 +1,51 @@
 const { getPhoto, folderUsers } = require('../utils')
 
+function getAuth({ $id }, db) {
+  const keys = [
+    'users.id', 'name', 'username'
+    , 'email', 'photo', 'statusEmail',
+    'users_config.theme as config_theme'
+  ]
+  
+  const $keys = keys.join(', ')
+  const params = { $id }
+
+  return new Promise((res, rej) => {
+    const st = db.prepare(
+      `SELECT ${$keys} 
+      FROM users
+      INNER JOIN users_config on (userId = users.id) 
+      WHERE users.id = $id`);
+
+    st.get(params, function (err, row) {
+      if (err) {
+        return rej()
+      }
+
+      if(!row) {
+        return rej({ st:400, msg: 'user not found' })
+      }
+
+      const ksrow = Object.keys(row)
+      const rel = {}
+      for(let key of ksrow) {
+        if (key.includes('_')) {
+          const tp = key.split('_')
+          const val = rel[tp[0]] 
+          rel[tp[0]] = val ? val : {}
+          rel[tp[0]][tp[1]] = row[key]
+          continue
+        }
+        rel[key] = row[key]
+      }
+
+      const rw = { ...rel, photo: getPhoto(folderUsers, row.photo) }
+      return res(rw)
+    })
+    st.finalize();
+  })
+}
+
 function getMe({ $id }, db) {
   const keys = [
     'name', 'phone', 'birthday', 'gender'
@@ -11,7 +57,11 @@ function getMe({ $id }, db) {
   const params = { $id }
 
   return new Promise((res, rej) => {
-    const st = db.prepare(`SELECT ${$keys} FROM users WHERE id = $id`);
+    const st = db.prepare(
+      `SELECT ${$keys} 
+      FROM users
+      WHERE users.id = $id`);
+
     st.get(params, function (err, row) {
       if (err) {
         return rej()
@@ -191,6 +241,7 @@ function getByUsername({ $username }, db) {
 }
 
 module.exports = {
+  getAuth,
   getMe,
   updatePhoto,
   updateInfo,
