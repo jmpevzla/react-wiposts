@@ -27,6 +27,7 @@ import MainLayout from "@/layout/view/MainLayout";
 import NotificationsView from "@/notifications/view/NotificationsView";
 import ChangeEmailView from "@/profile/view/ChangeEmailView";
 import VerifyEmailView from "@/profile/view/VerifyEmailView";
+import ConfigView from "@/config/view/ConfigView";
 
 export default AppView
 
@@ -65,7 +66,7 @@ function AppView() {
               <Route path="edit" element={<EditPostView />} />
               <Route path="photo" element={<PhotoPostView />} />
             </Route>
-            <Route path="notifications" element={<NotificationsView />} />
+            <Route path="config" element={<ConfigView />} />
             <Route path="about" element={<AboutView />} />
             <Route path="loading" element={<LoadingView />} />
             <Route path="not-found" element={<NotFoundView />} />
