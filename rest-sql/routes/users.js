@@ -2,10 +2,10 @@ const express = require('express');
 const fs = require('fs')
 const { getDb } = require('../db')
 const multer = require('../multer')
-const { folderUsers, getPhoto } = require('../utils')
 const { getMe, updatePhoto, updateInfo
   , checkWithPassword, updatePassword, getByUsername
   , getAuth } = require('../models/users')
+const { makeTokenId } = require('../utils')
 
 const router = express.Router();
 const upload = multer('users')
@@ -180,7 +180,7 @@ router.get('/user/:username', function(req, res){
 
 });
 
-router.post('/change-email', function(req, res) {
+router.post('/me/change-email', function(req, res) {
   const db = getDb()
   const $userId = 1
   const $updatedAt = new Date().toISOString()
@@ -232,87 +232,6 @@ router.post('/change-email', function(req, res) {
       console.error(err)
       
       db.close();
-
-      return res.status(500).end()
-    }
-  })
-})
-
-router.get('/verify-email/:token', function(req, res) {
-  const db = getDb()
-  const $updatedAt = new Date().toISOString()
-  const $tokenEmailId = req.params.token
-  
-  db.serialize(async function(err) {
-    
-    const getUser = () => new Promise((res, rej) => {
-      const st = db.prepare(
-        `SELECT id
-        FROM users
-        WHERE tokenEmailId = $tokenEmailId`
-      );
-      const values = {
-        $tokenEmailId
-      }
-
-      st.get(values, function(err, row) {
-        if (err) {
-          return rej(err)
-        }
-
-        if (!row) {
-          return rej({ status: 'NOTFOUND' })
-        }
-
-        return res(row.id)
-      })
-      st.finalize();
-    });
-
-    const updateUser = ($id) => new Promise((res, rej) => {
-      const st = db.prepare(
-        `UPDATE users 
-        SET email = temporalEmail, 
-        tokenEmailId = $tokenEmailId, 
-        temporalEmail = $temporalEmail,
-        statusEmail = $statusEmail,
-        updatedAt = $updatedAt 
-        WHERE id = $id`
-      );
-
-      const values = {
-        $tokenEmailId: null,
-        $temporalEmail: null,
-        $statusEmail: 'VERIFIED',
-        $updatedAt,
-        $id
-      }
-      
-      st.run(values, function (err, row) {
-        if (err) {
-          return rej(err)
-        }
-
-        res()
-      })
-      st.finalize();
-    });
-
-    try {
-      const id = await getUser()
-      await updateUser(id)
-
-      db.close();
-      return res.status(200).end()
-
-    } catch(err) {
-      console.error(err)
-      
-      db.close();
-
-      if (err && err.status == 'NOTFOUND') {
-        return res.status(400).json({ error: 'user not found'})
-      }
 
       return res.status(500).end()
     }

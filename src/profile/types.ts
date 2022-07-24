@@ -27,6 +27,10 @@ export interface ChangePassword {
   confNewPassword: string
 }
 
+export interface ChangeEmail {
+  temporalEmail: string
+}
+
 export type ProfileResponse = TResponse<Profile>
 export type ProfileEdit = Omit<Profile, 'username' | 'email' | 'photo'>
 export type ProfileShowResponse = TResponse<ProfileShow>

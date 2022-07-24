@@ -1,5 +1,6 @@
 import type { AxiosResponse } from "axios";
-import type { ChangePassword, ProfileEdit, ProfileResponse
+import type { ChangeEmail, ChangePassword
+  , ProfileEdit, ProfileResponse
   ,ProfileShowResponse } from "../types";
 
 import { axios, axiosUpload } from '@/api/getAxios'
@@ -39,4 +40,14 @@ export async function uploadPhotoApi(photo: File): Promise<PhotoResponse> {
     (`/users/me/photo`, formData)
 
   return res.data
+}
+
+export async function changeEmailApi(data: ChangeEmail): Promise<void> {
+  await axios.post<any, AxiosResponse<void>, ChangeEmail>
+    (`/users/me/change-email`, data)
+}
+
+export async function verifyEmailApi(token: string): Promise<void> {
+  await axios.post<any, AxiosResponse<void>, ChangeEmail>
+    (`/auth/verify-email/${token}`)
 }

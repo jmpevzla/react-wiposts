@@ -324,7 +324,10 @@ function EditProfileView() {
         </div>
       </div>
 
-
+      <footer className="mt-3 flex flex-row gap-x-2">
+        <Link data-test="home" className="link" to='/'>Home</Link>
+        <Link data-test="profile" className="link" to='/profile'>Profile</Link>
+      </footer>
     </section>
   )
 }

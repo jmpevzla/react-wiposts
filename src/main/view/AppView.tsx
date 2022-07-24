@@ -26,6 +26,7 @@ import AuthLayout from "@/layout/view/AuthLayout";
 import MainLayout from "@/layout/view/MainLayout";
 import NotificationsView from "@/notifications/view/NotificationsView";
 import ChangeEmailView from "@/profile/view/ChangeEmailView";
+import VerifyEmailView from "@/profile/view/VerifyEmailView";
 
 export default AppView
 
@@ -42,6 +43,7 @@ function AppView() {
               <Route path=":tokenId/code" element={<RecPasswordCodeView />} />
               <Route path=":tokenId/code/:code/change" element={<RecPasswordChangeView />} />
             </Route>
+            <Route path="verify-email/:token" element={<VerifyEmailView />} />
           </Route>
 
           <Route element={<MainLayout />}>
