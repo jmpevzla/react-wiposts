@@ -769,7 +769,8 @@ router.get('/search', function(req, res) {
 
     const keys = [
       'posts.id', 'posts.photo', 'photoDatetime'
-      , 'posts.description', 'hashtags', 'status', 'posts.createdAt'
+      , 'posts.description', 'hashtags', 'status'
+      , 'posts.createdAt', 'posts.updatedAt'
       , 'users.id as user_id'
       , 'users.name as user_name, users.photo as user_photo'
       , 'users.username as user_username'
