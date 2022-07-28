@@ -2,7 +2,8 @@ const express = require('express');
 const fs = require('fs')
 const { getDb, getDbTrans } = require('../db')
 const multer = require('../multer')
-const { folderPosts, getPhoto, folderUsers } = require('../utils')
+const { folderPosts, getPhoto
+  , folderUsers, isIsoDate } = require('../utils')
 
 const router = express.Router();
 const upload = multer('posts');
@@ -658,6 +659,298 @@ router.delete('/remove/:id', function(req, res){
       return res.status(500).end()
     }
   })
+});
+
+router.get('/search', function(req, res) {
+  const db = getDb()
+  const query = req.query
+
+  // query default
+  let $q = query.q || ''
+  $q = '%' + $q + '%'
+  
+  // paginate
+  const page = query._page || 1
+  const $countPag = 1 //20
+  const $offset = (page-1) * $countPag
+
+  // sort
+  let sort = query._sort || ''
+  let order = query._order || ''
+
+  sort = sort.split(',')
+  sort = sort.filter((value) => value !== '')
+  sort = sort.length > 0 ? sort : ['id']
+
+  order = order.split(',')
+  order = order.filter((value) => value !== '')
+  order = order.length > 0 ? order : ['desc']  
+
+  const sortKeys = ['id', 'description', 'hashtags',
+    'photoDatetime', 'createdAt', 'updatedAt', 
+    'user_name', 'user_username']
+  const orderKeys = ['asc', 'desc']
+
+  const _sort = []
+  const _order = []
+  if (sort.length === order.length) {
+    sort.forEach((value, index) => {
+      const key = sortKeys.find((val) => val === value)
+      if (key) {
+        return _sort.push(key)
+      }
+      order.splice(index)
+    })
+
+    order.forEach((value) => {
+      const key = orderKeys.find((val) => val === value)
+      if (key) {
+        return _order.push(key)
+      }
+      _order.push('asc')
+    })
+  } 
+  
+  if (_sort.length === 0) {
+    _sort.push('id')
+    _order.push('desc')
+  }
+
+  let $orderBy = _sort.map((value, index) => {
+    let val = value.includes('user_') 
+      ? 'users.' + value.replace('user_', '') 
+      : 'posts.' + value
+    
+    if (/photoDatetime|createdAt|updatedAt/.test(val)) {
+      val = `datetime(${val})`
+    }
+    return val + ' ' + _order[index]
+  }).join(', ')
+
+  // filters
+  let ft = parseInt(query._ft || 0)
+  ft = isNaN(ft) ? 0 : ft
+  const dateMin = String(0)
+  const dateMax = String(5000000)
+  const $photoDtFrom = isIsoDate(query.photoDtFrom) ? query.photoDtFrom : dateMin
+  const $photoDtUntil = isIsoDate(query.photoDtUntil) ? query.photoDtUntil : dateMax
+  const $createdAtFrom = isIsoDate(query.createdAtFrom) ? query.createdAtFrom : dateMin
+  const $createdAtUntil = isIsoDate(query.createdAtUntil) ? query.createdAtUntil : dateMax
+  const $updatedAtFrom = isIsoDate(query.updatedAtFrom) ? query.updatedAtFrom : dateMin
+  const $updatedAtUntil = isIsoDate(query.updatedAtUntil) ? query.updatedAtUntil : dateMax
+  const $description = '%' + (query.description || '') + '%'
+  const $hashtags = '%' + (query.hashtags || '') + '%'
+  const $name = '%' + (query.user_name || '') + '%'
+  const $username = '%' + (query.user_username || '') + '%'
+
+  db.serialize(async () => {
+    const countDefault = () => new Promise((res, rej) => {
+      const st = db.prepare(`
+        SELECT count(posts.id) as count
+        FROM posts
+        LEFT JOIN users ON (users.id = posts.userId) 
+        WHERE 1 = 1 AND 
+        (posts.description LIKE $q OR
+        posts.hashtags LIKE $q OR
+        users.name LIKE $q OR
+        users.username LIKE $q)
+      `)
+
+      const params = { $q }
+      st.get(params, function(err, row) {
+        if (err) {
+          rej(err)
+        }
+
+        res(row.count)
+      })
+      st.finalize()
+    })
+
+    const keys = [
+      'posts.id', 'posts.photo', 'photoDatetime'
+      , 'posts.description', 'hashtags', 'status', 'posts.createdAt'
+      , 'users.id as user_id'
+      , 'users.name as user_name, users.photo as user_photo'
+      , 'users.username as user_username'
+    ]
+    const $keys = keys.join(', ')
+    
+    const queryDefault = () => new Promise((res, rej) => {
+      
+      const params = { $q, $countPag, $offset }
+  
+      const st = db.prepare(`
+        SELECT ${$keys} 
+        FROM posts 
+        LEFT JOIN users ON (users.id = posts.userId) 
+        WHERE 1 = 1 AND 
+        (posts.description LIKE $q OR
+        posts.hashtags LIKE $q OR
+        users.name LIKE $q OR
+        users.username LIKE $q)
+        ORDER BY ${$orderBy}
+        LIMIT $countPag
+        OFFSET $offset`);
+      
+      st.all(params, function (err, rows) {
+        if (err) {
+          rej(err)
+        }
+      
+        const result = rows.map(row => {
+  
+          const ksrow = Object.keys(row)
+          const rel = {}
+          for(const key of ksrow) {
+            if (key.includes('_')) {
+              const tp = key.split('_')
+              const val = rel[tp[0]] 
+              rel[tp[0]] = val ? val : {}
+              rel[tp[0]][tp[1]] = row[key]
+              continue
+            }
+            rel[key] = row[key]
+          }
+          rel.photo = getPhoto(folderPosts, rel.photo)
+          rel.user.photo = getPhoto(folderUsers, rel.user.photo)
+          count = rel.count
+          delete rel.count
+          return rel
+        })
+       
+        return res(result)
+      })
+      st.finalize();
+    }) 
+
+    const countFilters = () => new Promise((res, rej) => {
+      const st = db.prepare(`
+        SELECT count(posts.id) as count
+        FROM posts
+        LEFT JOIN users ON (users.id = posts.userId) 
+        WHERE 1 = 1 AND 
+        datetime(posts.photoDatetime) >= datetime($photoDtFrom) AND
+        datetime(posts.photoDatetime) <= datetime($photoDtUntil) AND
+        datetime(posts.createdAt) >= datetime($createdAtFrom) AND
+        datetime(posts.createdAt) <= datetime($createdAtUntil) AND
+        datetime(posts.updatedAt) >= datetime($updatedAtFrom) AND
+        datetime(posts.updatedAt) <= datetime($updatedAtUntil) AND
+        posts.description LIKE $description AND
+        posts.hashtags LIKE $hashtags AND
+        users.name LIKE $name AND
+        users.username LIKE $username
+      `)
+
+      const params = { 
+        $photoDtFrom, 
+        $photoDtUntil,
+        $createdAtFrom,
+        $createdAtUntil,
+        $updatedAtFrom,
+        $updatedAtUntil,
+        $description,
+        $hashtags,
+        $name,
+        $username 
+      }
+      st.get(params, function(err, row) {
+        if (err) {
+          rej(err)
+        }
+
+        res(row.count)
+      })
+      st.finalize()
+    })
+
+    const queryFilters = () => new Promise((res, rej) => {
+      
+      const params = { 
+        $photoDtFrom, 
+        $photoDtUntil,
+        $createdAtFrom,
+        $createdAtUntil,
+        $updatedAtFrom,
+        $updatedAtUntil,
+        $description,
+        $hashtags,
+        $name,
+        $username,
+        $countPag,
+        $offset 
+      }
+  
+      const st = db.prepare(`
+        SELECT ${$keys} 
+        FROM posts 
+        LEFT JOIN users ON (users.id = posts.userId) 
+        WHERE 1 = 1 AND 
+        datetime(posts.photoDatetime) >= datetime($photoDtFrom) AND
+        datetime(posts.photoDatetime) <= datetime($photoDtUntil) AND
+        datetime(posts.createdAt) >= datetime($createdAtFrom) AND
+        datetime(posts.createdAt) <= datetime($createdAtUntil) AND
+        datetime(posts.updatedAt) >= datetime($updatedAtFrom) AND
+        datetime(posts.updatedAt) <= datetime($updatedAtUntil) AND
+        posts.description LIKE $description AND
+        posts.hashtags LIKE $hashtags AND
+        users.name LIKE $name AND
+        users.username LIKE $username
+        ORDER BY ${$orderBy}
+        LIMIT $countPag
+        OFFSET $offset`);
+      
+      st.all(params, function (err, rows) {
+        if (err) {
+          rej(err)
+        }
+      
+        const result = rows.map(row => {
+  
+          const ksrow = Object.keys(row)
+          const rel = {}
+          for(const key of ksrow) {
+            if (key.includes('_')) {
+              const tp = key.split('_')
+              const val = rel[tp[0]] 
+              rel[tp[0]] = val ? val : {}
+              rel[tp[0]][tp[1]] = row[key]
+              continue
+            }
+            rel[key] = row[key]
+          }
+          rel.photo = getPhoto(folderPosts, rel.photo)
+          rel.user.photo = getPhoto(folderUsers, rel.user.photo)
+          count = rel.count
+          delete rel.count
+          return rel
+        })
+       
+        return res(result)
+      })
+      st.finalize();
+    }) 
+
+    try {
+      if (ft) {
+        const count = await countFilters()
+        const values = await queryFilters()
+        return res.set({'X-Total-Count': count}).json(values)
+      }
+      
+      const count = await countDefault()
+      const values = await queryDefault()
+      return res.set({'X-Total-Count': count}).json(values)
+
+    } catch(err) {
+      console.error(err)
+      return res.status(500).end()
+    } finally {
+      db.close()
+    }
+
+  });
+
 });
 
 //export this router to use in our index.js
