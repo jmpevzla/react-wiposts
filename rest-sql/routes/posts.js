@@ -664,6 +664,7 @@ router.delete('/remove/:id', function(req, res){
 router.get('/search', function(req, res) {
   const db = getDb()
   const query = req.query
+  const $status = 'COMPLETED'
 
   // query default
   let $q = query.q || ''
@@ -749,14 +750,14 @@ router.get('/search', function(req, res) {
         SELECT count(posts.id) as count
         FROM posts
         LEFT JOIN users ON (users.id = posts.userId) 
-        WHERE 1 = 1 AND 
+        WHERE status = $status AND 
         (posts.description LIKE $q OR
         posts.hashtags LIKE $q OR
         users.name LIKE $q OR
         users.username LIKE $q)
       `)
 
-      const params = { $q }
+      const params = { $q, $status }
       st.get(params, function(err, row) {
         if (err) {
           rej(err)
@@ -779,13 +780,13 @@ router.get('/search', function(req, res) {
     
     const queryDefault = () => new Promise((res, rej) => {
       
-      const params = { $q, $countPag, $offset }
+      const params = { $q, $status, $countPag, $offset }
   
       const st = db.prepare(`
         SELECT ${$keys} 
         FROM posts 
         LEFT JOIN users ON (users.id = posts.userId) 
-        WHERE 1 = 1 AND 
+        WHERE status = $status AND 
         (posts.description LIKE $q OR
         posts.hashtags LIKE $q OR
         users.name LIKE $q OR
@@ -830,7 +831,7 @@ router.get('/search', function(req, res) {
         SELECT count(posts.id) as count
         FROM posts
         LEFT JOIN users ON (users.id = posts.userId) 
-        WHERE 1 = 1 AND 
+        WHERE status = $status AND 
         datetime(posts.photoDatetime) >= datetime($photoDtFrom) AND
         datetime(posts.photoDatetime) <= datetime($photoDtUntil) AND
         datetime(posts.createdAt) >= datetime($createdAtFrom) AND
@@ -844,6 +845,7 @@ router.get('/search', function(req, res) {
       `)
 
       const params = { 
+        $status,
         $photoDtFrom, 
         $photoDtUntil,
         $createdAtFrom,
@@ -867,7 +869,8 @@ router.get('/search', function(req, res) {
 
     const queryFilters = () => new Promise((res, rej) => {
       
-      const params = { 
+      const params = {
+        $status, 
         $photoDtFrom, 
         $photoDtUntil,
         $createdAtFrom,
@@ -886,7 +889,7 @@ router.get('/search', function(req, res) {
         SELECT ${$keys} 
         FROM posts 
         LEFT JOIN users ON (users.id = posts.userId) 
-        WHERE 1 = 1 AND 
+        WHERE status = $status AND 
         datetime(posts.photoDatetime) >= datetime($photoDtFrom) AND
         datetime(posts.photoDatetime) <= datetime($photoDtUntil) AND
         datetime(posts.createdAt) >= datetime($createdAtFrom) AND
