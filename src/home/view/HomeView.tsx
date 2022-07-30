@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { checkDraftPostApi, createPostApi } from "@/post/data/postService";
 import { useFormik } from "formik";
 import Options from "./Options";
+import { PostsList, PostSearch } from "../types";
+import { getPostsApi } from "../data/homeService";
 
 export default HomeView;
 
@@ -12,61 +14,74 @@ function HomeView() {
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState("");
 
-  const formatDate = (date: string) => {
-    const dt = new Date(date)
-    const df = Intl.DateTimeFormat([], {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric"
-    })
-    return df.format(dt)
-  }
-
-  const [posts, setPosts] = useState([{
-    id: 1,
-    photo: 'http://localhost:4000/public/uploads/users/photo-1658040750855-11642152.jpg',
-    description: 'a new web site',
-    hashtags: '#website',
-    createdAt: formatDate(new Date().toISOString()),
-    updatedAt: formatDate(new Date().toISOString()),
-    photoDatetime: formatDate(new Date().toISOString()),
-    user: {
-      name: 'Bob Martin',
-      photo: 'http://localhost:4000/public/uploads/users/photo-1658040750855-11642152.jpg',
-      username: 'bobmartin'
-    }
-  }])
+  const [list, setList] = useState<PostsList | null>(null)
   const navigate = useNavigate();
 
-  const initValues = () => {
+  function initValues(): PostSearch 
+  {
     return {
       search: '',
+      page: 1,
       descriptionFt: '',
       hashtagsFt: '',
-      photoFromFt: '',
-      photoUntilFt: '',
+      photoDtFromFt: '',
+      photoDtUntilFt: '',
       createdAtFromFt: '',
       createdAtUntilFt: '',
       updatedAtFromFt: '',
       updatedAtUntilFt: '',
       nameFt: '',
       usernameFt: '',
-      descriptionSt: '',
-      hashtagsSt: '',
-      photoSt: '',
-      createdAtSt: '',
-      updatedAtSt: '',
-      nameSt: '',
-      usernameSt: ''
+      sort: [
+        { description: '' },
+        { hashtags: '' },
+        { photoDatetime: '' },
+        { createdAt: '' },
+        { updatedAt: '' },
+        { user_name: '' },
+        { user_username: '' },
+      ]
+      // descriptionSt: '',
+      // hashtagsSt: '',
+      // photoDatetimeSt: '',
+      // createdAtSt: '',
+      // updatedAtSt: '',
+      // user_nameSt: '',
+      // user_usernameSt: ''
     }
   }
 
   const formik = useFormik({
     initialValues: initValues(),
     onSubmit: async (values) => {
-      console.log(values)
+      try {
+        setIsLoading(true)
+        const result = await getPostsApi(values)
+        console.log(result)
+        setList(result.info)
+
+      } catch(err: any) {
+        console.error(err)
+        setError(err.message)
+      } finally {
+        setIsLoading(false)
+      }
     },
   });
+
+  const handleSort = (ev: React.ChangeEvent<any>) => {
+    const target = ev.currentTarget
+    const field = target.name.replace('sort_', '')
+    const value = target.value
+    
+    const sort = formik.values.sort.slice()
+    const index = sort.findIndex(value => {
+      return Object.keys(value)[0] === field
+    })
+
+    sort[index] = { [field]: value }
+    formik.setFieldValue('sort', sort)
+  }
 
   const setTabFunc = (value: string) => {
     setTab(value)
@@ -75,6 +90,13 @@ function HomeView() {
         ...initValues(),
         search: formik.values.search
       })
+    }
+  }
+
+  const onPage = (value: number) => {
+    const page = formik.values.page + value
+    if (page > 0) {
+      formik.setFieldValue('page', formik.values.page + value)
     }
   }
 
@@ -145,7 +167,7 @@ function HomeView() {
           <input type="checkbox" id="my-modal" className="modal-toggle" />
           <div className="modal">
             <div className="modal-box">
-              <Options formik={formik} tab={tab} setTab={setTabFunc} />
+              <Options formik={formik} tab={tab} setTab={setTabFunc} handleChangeSort={handleSort} />
               <div className="modal-action">
                 <label htmlFor="my-modal" className="btn btn-pr"
                   onClick={() => formik.handleSubmit()}>Search</label>
@@ -153,11 +175,25 @@ function HomeView() {
               </div>
             </div>
           </div>
+
+          <button 
+            type="button"
+            className="ml-3 btn"
+            onClick={() => onPage(-1)}>
+            &lt;&lt;
+          </button>
+          <span className="font-bold mx-2">{formik.values.page}</span>
+          <button 
+            type="button"
+            className="btn"
+            onClick={() => onPage(1)}>
+            &gt;&gt;
+          </button>
         </form>
       </div>
 
       <div>
-        {posts && posts.map((value) => (
+        {list && list.posts.map((value) => (
           <article 
             key={value.id}
             className="mt-2 border-2 border-primary p-2">
@@ -181,6 +217,7 @@ function HomeView() {
             </div>
           </article>
         ))}
+        
       </div>
     </section>
   );

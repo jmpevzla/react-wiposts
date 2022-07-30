@@ -2,7 +2,7 @@ import classNames from "classnames"
 
 export default Options
 
-function Options({ formik, tab, setTab }: any) {
+function Options({ formik, tab, setTab, handleChangeSort }: any) {
   return (
     <div>
     <div className="tabs">
@@ -84,7 +84,7 @@ function Options({ formik, tab, setTab }: any) {
             name="photoFromFt"
             type="datetime-local"
             className="block input input-primary" 
-            value={formik.values.photoFromFt}
+            value={formik.values.photoDtFromFt}
             onChange={formik.handleChange}
             />
         </div>
@@ -97,7 +97,7 @@ function Options({ formik, tab, setTab }: any) {
             name="photoUntilFt"
             type="datetime-local"
             className="block input input-primary" 
-            value={formik.values.photoUntilFt}
+            value={formik.values.photoDtUntilFt}
             onChange={formik.handleChange}
             />
         </div>
@@ -192,10 +192,10 @@ function Options({ formik, tab, setTab }: any) {
           </label>
           <select
             id="selectDesc"
-            name="descriptionSt"
+            name="sort_description"
             className="select select-primary"
-            value={formik.values.descriptionSt}
-            onChange={formik.handleChange}
+            value={formik.values.sort[0].description}
+            onChange={handleChangeSort}
           >
             <option value=""></option>
             <option value="asc">&darr; ASC</option>
@@ -209,10 +209,10 @@ function Options({ formik, tab, setTab }: any) {
           </label>
           <select
             id="selectHash"
-            name="hashtagsSt"
+            name="sort_hashtags"
             className="select select-primary"
-            value={formik.values.hashtagsSt}
-            onChange={formik.handleChange}
+            value={formik.values.sort[1].hashtags}
+            onChange={handleChangeSort}
           >
             <option value=""></option>
             <option value="asc">&darr; ASC</option>
@@ -226,10 +226,10 @@ function Options({ formik, tab, setTab }: any) {
           </label>
           <select
             id="selectPhotoDt"
-            name="photoSt"
+            name="sort_photoDatetime"
             className="select select-primary"
-            value={formik.values.photoSt}
-            onChange={formik.handleChange}
+            value={formik.values.sort[2].photoDatetime}
+            onChange={handleChangeSort}
           >
             <option value=""></option>
             <option value="asc">&darr; ASC</option>
@@ -243,10 +243,10 @@ function Options({ formik, tab, setTab }: any) {
           </label>
           <select
             id="selectCreatedAt"
-            name="createdAtSt"
+            name="sort_createdAt"
             className="select select-primary"
-            value={formik.values.createdAtSt}
-            onChange={formik.handleChange}
+            value={formik.values.sort[3].createdAt}
+            onChange={handleChangeSort}
           >
             <option value=""></option>
             <option value="asc">&darr; ASC</option>
@@ -260,10 +260,10 @@ function Options({ formik, tab, setTab }: any) {
           </label>
           <select
             id="selectUpdatedAt"
-            name="updatedAtSt"
+            name="sort_updatedAt"
             className="select select-primary"
-            value={formik.values.updatedAtSt}
-            onChange={formik.handleChange}
+            value={formik.values.sort[4].updatedAt}
+            onChange={handleChangeSort}
           >
             <option value=""></option>
             <option value="asc">&darr; ASC</option>
@@ -277,10 +277,10 @@ function Options({ formik, tab, setTab }: any) {
           </label>
           <select
             id="selectName"
-            name="nameSt"
+            name="sort_user_name"
             className="select select-primary"
-            value={formik.values.nameSt}
-            onChange={formik.handleChange}
+            value={formik.values.sort[5].user_name}
+            onChange={handleChangeSort}
           >
             <option value=""></option>
             <option value="asc">&darr; ASC</option>
@@ -294,10 +294,10 @@ function Options({ formik, tab, setTab }: any) {
           </label>
           <select
             id="selectUsername"
-            name="usernameSt"
+            name="sort_user_username"
             className="select select-primary"
-            value={formik.values.usernameSt}
-            onChange={formik.handleChange}
+            value={formik.values.sort[6].user_username}
+            onChange={handleChangeSort}
           >
             <option value=""></option>
             <option value="asc">&darr; ASC</option>

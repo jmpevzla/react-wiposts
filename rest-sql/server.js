@@ -7,7 +7,11 @@ const app = express();
 const port = 4000;
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(cors())
+
+const corsOptions = {
+  exposedHeaders: '*'
+}
+app.use(cors(corsOptions))
 app.use('/public', express.static('public'))
 
 // routes

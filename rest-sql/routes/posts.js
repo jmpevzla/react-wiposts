@@ -672,7 +672,7 @@ router.get('/search', function(req, res) {
   
   // paginate
   const page = query._page || 1
-  const $countPag = 1 //20
+  const $countPag = 10
   const $offset = (page-1) * $countPag
 
   // sort
@@ -939,12 +939,12 @@ router.get('/search', function(req, res) {
       if (ft) {
         const count = await countFilters()
         const values = await queryFilters()
-        return res.set({'X-Total-Count': count}).json(values)
+        return res.set({'x-total-count': count}).json(values)
       }
       
       const count = await countDefault()
       const values = await queryDefault()
-      return res.set({'X-Total-Count': count}).json(values)
+      return res.set({'x-total-count': count}).json(values)
 
     } catch(err) {
       console.error(err)
