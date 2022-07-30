@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { checkDraftPostApi, createPostApi } from "@/post/data/postService";
 import { useFormik } from "formik";
@@ -130,6 +130,22 @@ function HomeView() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setIsLoading(true)
+        const result = await getPostsApi(initValues())
+        setList(result.info)
+      } catch(err: any) {
+        console.error(err)
+        setError(err.message)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    load()
+  }, [])
 
   return (
     <section>
