@@ -22,16 +22,16 @@ function HomeView() {
     return {
       search: '',
       page: 1,
-      descriptionFt: '',
-      hashtagsFt: '',
-      photoDtFromFt: '',
-      photoDtUntilFt: '',
-      createdAtFromFt: '',
-      createdAtUntilFt: '',
-      updatedAtFromFt: '',
-      updatedAtUntilFt: '',
-      nameFt: '',
-      usernameFt: '',
+      ft_description: '',
+      ft_hashtags: '',
+      ft_photoDtFrom: '',
+      ft_photoDtUntil: '',
+      ft_createdAtFrom: '',
+      ft_createdAtUntil: '',
+      ft_updatedAtFrom: '',
+      ft_updatedAtUntil: '',
+      ft_user_name: '',
+      ft_user_username: '',
       sort: [
         { description: '' },
         { hashtags: '' },
@@ -41,13 +41,6 @@ function HomeView() {
         { user_name: '' },
         { user_username: '' },
       ]
-      // descriptionSt: '',
-      // hashtagsSt: '',
-      // photoDatetimeSt: '',
-      // createdAtSt: '',
-      // updatedAtSt: '',
-      // user_nameSt: '',
-      // user_usernameSt: ''
     }
   }
 

@@ -56,7 +56,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputDescFt"
-            name="descriptionFt"
+            name="ft_description"
             className="form-control input input-primary" 
             value={formik.values.descriptionFt}
             onChange={formik.handleChange} />
@@ -68,7 +68,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputHashFt"
-            name="hashtagsFt"
+            name="ft_hashtags"
             className="form-control input input-primary" 
             value={formik.values.hashtagsFt}
             onChange={formik.handleChange}
@@ -81,7 +81,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputPhotoFromFt"
-            name="photoFromFt"
+            name="ft_photoDtFrom"
             type="datetime-local"
             className="block input input-primary" 
             value={formik.values.photoDtFromFt}
@@ -94,7 +94,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputPhotoUntilFt"
-            name="photoUntilFt"
+            name="ft_photoDtUntil"
             type="datetime-local"
             className="block input input-primary" 
             value={formik.values.photoDtUntilFt}
@@ -108,7 +108,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputCreatedAtFromFt"
-            name="createdAtFromFt"
+            name="ft_createdAtFrom"
             type="datetime-local"
             className="block input input-primary" 
             value={formik.values.createdAtFromFt}
@@ -121,7 +121,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputCreatedAtUntilFt"
-            name="createdAtUntilFt"
+            name="ft_createdAtUntil"
             type="datetime-local"
             className="block input input-primary" 
             value={formik.values.createdAtUntilFt}
@@ -135,7 +135,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputUpdatedAtFromFt"
-            name="updatedAtFromFt"
+            name="ft_updatedAtFrom"
             type="datetime-local"
             className="block input input-primary" 
             value={formik.values.updatedAtFromFt}
@@ -148,7 +148,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputUpdatedAtUntilFt"
-            name="updatedAtUntilFt"
+            name="ft_updatedAtUntil"
             type="datetime-local"
             className="block input input-primary" 
             value={formik.values.updatedAtUntilFt}
@@ -162,7 +162,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputNameFt"
-            name="nameFt"
+            name="ft_user_name"
             className="form-control input input-primary" 
             value={formik.values.nameFt}
             onChange={formik.handleChange}
@@ -175,7 +175,7 @@ function Options({ formik, tab, setTab, handleChangeSort }: any) {
           </label>
           <input
             id="inputUsernameFt"
-            name="usernameFt"
+            name="ft_user_username"
             className="form-control input input-primary"
             value={formik.values.usernameFt}
             onChange={formik.handleChange}

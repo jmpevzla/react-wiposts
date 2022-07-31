@@ -4,16 +4,16 @@ export interface PostSearch {
   search: string;
   page: number;
 
-  descriptionFt: string;
-  hashtagsFt: string;
-  photoDtFromFt: string;
-  photoDtUntilFt: string;
-  createdAtFromFt: string;
-  createdAtUntilFt: string;
-  updatedAtFromFt: string;
-  updatedAtUntilFt: string;
-  nameFt: string;
-  usernameFt: string;
+  ft_description: string;
+  ft_hashtags: string;
+  ft_photoDtFrom: string;
+  ft_photoDtUntil: string;
+  ft_createdAtFrom: string;
+  ft_createdAtUntil: string;
+  ft_updatedAtFrom: string;
+  ft_updatedAtUntil: string;
+  ft_user_name: string;
+  ft_user_username: string;
   
   sort: Record<string, string>[];
   // descriptionSt: string;
@@ -23,7 +23,7 @@ export interface PostSearch {
   // updatedAtSt: string;
   // user_nameSt: string;
   // user_usernameSt: string;
-  //[key: string]: string | number;
+  [key: string]: any;
 }
 
 export interface PostApiSearch {
@@ -45,6 +45,7 @@ export interface PostApiSearch {
   
   _sort?: string;
   _order?: string;
+  [key: string]: string | number | undefined;
 }
 
 interface PostList {
